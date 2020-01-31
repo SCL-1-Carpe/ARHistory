@@ -33,7 +33,7 @@ MonoBehaviour:
   - name: GesturesSubscribe
     enabled: 1
   - name: HandMesh
-    enabled: 1
+    enabled: 0
   - name: IdentityRead
     enabled: 1
   - name: InAppPurchase
@@ -47,7 +47,7 @@ MonoBehaviour:
   - name: Occlusion
     enabled: 0
   - name: PcfRead
-    enabled: 1
+    enabled: 0
   - name: PowerInfo
     enabled: 1
   - name: RegisterBackgroundMusicService
@@ -55,9 +55,9 @@ MonoBehaviour:
   - name: ScreensProvider
     enabled: 1
   - name: SecureBrowserWindow
-    enabled: 1
+    enabled: 0
   - name: WifiStatusRead
-    enabled: 1
+    enabled: 0
   - name: WorldReconstruction
     enabled: 1
   - name: AddressBookRead
@@ -75,6 +75,18 @@ MonoBehaviour:
   - name: CoarseLocation
     enabled: 1
   - name: ComputerVision
-    enabled: 1
+    enabled: 0
   - name: VoiceInput
     enabled: 1
+  - name: AddressBookBasicAccess
+    enabled: 0
+  - name: BluetoothAdapterExternalApp
+    enabled: 0
+  - name: BluetoothAdapterUser
+    enabled: 0
+  - name: BluetoothGattWrite
+    enabled: 0
+  - name: SocialConnectionsInvitesAccess
+    enabled: 0
+  - name: FineLocation
+    enabled: 0
