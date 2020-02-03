@@ -194,6 +194,8 @@ namespace MagicLeap
             _touchpadMaterial.color = Color.Lerp(_defaultColor, _activeColor, force);
         }
 
+        //Refer to here
+
         /// <summary>
         /// Update the rotation and visual color of the trigger.
         /// </summary>
@@ -210,6 +212,7 @@ namespace MagicLeap
 
             // Set the rotation of the trigger
             Vector3 eulerRot = _trigger.transform.localRotation.eulerAngles;
+
             eulerRot.x = Mathf.Lerp(0, MAX_TRIGGER_ROTATION, controller.TriggerValue);
             _trigger.transform.localRotation = Quaternion.Euler(eulerRot);
         }
