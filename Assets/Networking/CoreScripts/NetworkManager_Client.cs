@@ -33,14 +33,6 @@ public class NetworkManager_Client : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        foreach (var I in Dns.GetHostAddresses(Dns.GetHostName()))
-        {
-            if (I.AddressFamily == AddressFamily.InterNetwork)
-            {
-                OwnIP = I;
-                DOwnIP = I.ToString();
-            }
-        }
         if (LaunchOnStart)
         {
             LaunchNetworkClient();
