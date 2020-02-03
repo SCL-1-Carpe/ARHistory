@@ -143,6 +143,7 @@ public class NetworkManager_Server : MonoBehaviour
     void RegistNewAutonomousObject(ClientDataContainer client, ReplicatiorBase replicatior, string PrefabName)
     {
         RegistNewReplicationObject(replicatior, PrefabName);
+        replicatior.OwnerNetId = client.NetworkId;
         client.AutonomousObjects.Add(replicatior);
     }
 

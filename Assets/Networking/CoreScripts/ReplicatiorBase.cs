@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class ReplicatiorBase : MonoBehaviour
 {
-    public bool HasOwnership = false;
+    public byte OwnerNetId = 0;
     public int Id = -1;
     public string RepPrefabName;
     // Start is called before the first frame update
