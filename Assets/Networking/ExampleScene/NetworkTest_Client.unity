@@ -243,14 +243,14 @@ MonoBehaviour:
   m_GameObject: {fileID: 1566480418}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8be0779532b3dfd48aa7b5e05bcb612f, type: 3}
+  m_Script: {fileID: 11500000, guid: b4c0b0e9ab6b9804d8d3cc66449fb384, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   DOwnIP: 
-  TargetIP: 192.168.100.108
+  TargetIP: 192.168.100.101
   LaunchOnStart: 1
-  TcpPortNum: 7890
-  UdpPortNum: 7895
+  TcpPortNum: 7990
+  UdpPortNum: 7995
 --- !u!1 &1936356281
 GameObject:
   m_ObjectHideFlags: 0

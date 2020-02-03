@@ -19,7 +19,7 @@ public class ReplicatiorBase : MonoBehaviour
 
     }
     /// <summary>
-    /// For Server
+    /// For Server.
     /// Return Byte Array for Replication.
     /// </summary>
     /// <returns>Byte Array for Replication</returns>
@@ -29,7 +29,7 @@ public class ReplicatiorBase : MonoBehaviour
     }
 
     /// <summary>
-    /// For Client
+    /// For Client.
     /// Return Byte Array for Autonomously Replication.
     /// </summary>
     /// <returns></returns>
@@ -39,7 +39,7 @@ public class ReplicatiorBase : MonoBehaviour
     }
 
     /// <summary>
-    /// For Client
+    /// For Client.
     /// Replicate From Server'sObjectData On Client
     /// </summary>
     /// <param name="repdata"></param>

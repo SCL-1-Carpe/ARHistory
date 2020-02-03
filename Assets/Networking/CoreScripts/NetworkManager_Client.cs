@@ -13,7 +13,8 @@ public class NetworkManager_Client : MonoBehaviour
     public string DOwnIP, TargetIP;
     UdpClient OwnUdpClient;
     TcpClient OwnTcpSocket;
-    public bool LaunchOnStart;
+    [SerializeField]
+    bool LaunchOnStart;
     byte NetworkId;
     [SerializeField]
     int TcpPortNum = 7890, UdpPortNum = 7891;
@@ -28,6 +29,7 @@ public class NetworkManager_Client : MonoBehaviour
     int buffersize = 512;
     Encoding encoding = Encoding.ASCII;
     byte[] databuffer;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -47,6 +49,8 @@ public class NetworkManager_Client : MonoBehaviour
 
     public void LaunchNetworkClient()
     {
+        if (!IPAddress.TryParse(TargetIP, out IPAddress ad))
+            return;
         databuffer = new byte[buffersize];
         OwnTcpSocket = new TcpClient();
         OwnUdpClient = new UdpClient(UdpPortNum);
@@ -58,9 +62,16 @@ public class NetworkManager_Client : MonoBehaviour
     void ConnectedToServerCallback(System.IAsyncResult ar)
     {
         OwnTcpSocket.EndConnect(ar);
+        if(OwnTcpSocket.Connected)
         Debug.Log("Client: Connected to Server");
+        OwnTcpSocket.Client.Send(encoding.GetBytes("RequestInitInfo"));
         OwnUdpClient.Send(encoding.GetBytes("InitRep$"), encoding.GetByteCount("InitRep$"), new IPEndPoint(IPAddress.Parse(TargetIP), UdpPortNum));
         //OwnUdpClient.Connect(TargetIP, UdpPortNum);
+    }
+
+    void NetworkInitialize(byte NewId)
+    {
+        NetworkId = NewId;
     }
 
     // Update is called once per frame
@@ -141,6 +152,9 @@ public class NetworkManager_Client : MonoBehaviour
                 break;
             case "AutoObjAdded":
                 AddAdmittedAutonomousObject(vs[1], int.Parse(vs[2]));
+                break;
+            case "Assign":
+                NetworkInitialize(byte.Parse(vs[1]));
                 break;
         }
     }

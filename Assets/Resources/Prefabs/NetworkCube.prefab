@@ -102,8 +102,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 8415472689734717530}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b42582ad5d05e4141bd1f49a67b11782, type: 3}
+  m_Script: {fileID: 11500000, guid: 436710fe9bb96c748aa96463ccc8f75d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  HasOwnership: 1
+  HasOwnership: 0
   Id: -1
+  RepPrefabName: 

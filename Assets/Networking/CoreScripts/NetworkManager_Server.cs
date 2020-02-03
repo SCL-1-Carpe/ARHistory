@@ -21,7 +21,7 @@ public struct ClientDataContainer
     public IPAddress address;
     public TcpClient TcpSocket;
     public List<ReplicatiorBase> AutonomousObjects;
-    public string Messagebuffer;
+    public byte NetworkId;
 }
 
 public class NetworkManager_Server : MonoBehaviour
@@ -33,7 +33,8 @@ public class NetworkManager_Server : MonoBehaviour
     TcpListener listener;
     UdpClient UdpSocket;
     public List<ClientDataContainer> ClientDataList = new List<ClientDataContainer>();
-    public bool LaunchOnStart;
+    [SerializeField]
+    bool LaunchOnStart;
     [SerializeField]
     int TcpPortNum = 7890, UdpPortNum = 7891;
     int buffersize = 512;
@@ -51,26 +52,27 @@ public class NetworkManager_Server : MonoBehaviour
     /// </summary>
     public List<ReplicatiorBase> RepObjects = new List<ReplicatiorBase>();
     int ObjIdBuffer = 0;
+    byte NetIdBuffer = 1;
 
     // Start is called before the first frame update
     void Start()
     {
         try
         {
-foreach (var I in Dns.GetHostAddresses(Dns.GetHostName()))
-        {
-            if (I.AddressFamily == AddressFamily.InterNetwork)
+            foreach (var I in Dns.GetHostAddresses(Dns.GetHostName()))
             {
-                OwnIP = I;
-                DOwnIP = I.ToString();
+                if (I.AddressFamily == AddressFamily.InterNetwork)
+                {
+                    OwnIP = I;
+                    DOwnIP = I.ToString();
+                }
             }
-        }
         }
         catch
         {
             OwnIP = IPAddress.Parse(DOwnIP);
         }
-        
+
         if (LaunchOnStart)
         {
             LaunchNetworkServer();
@@ -93,24 +95,41 @@ foreach (var I in Dns.GetHostAddresses(Dns.GetHostName()))
     {
         Debug.Log("Server: Client Connected");
         TcpClient client = (ar.AsyncState as TcpListener).EndAcceptTcpClient(ar);
-        ClientDataContainer c = new ClientDataContainer() { TcpSocket = client, address = ((IPEndPoint)client.Client.RemoteEndPoint).Address, AutonomousObjects = new List<ReplicatiorBase>() };
+        ClientDataContainer c = new ClientDataContainer() { TcpSocket = client, address = ((IPEndPoint)client.Client.RemoteEndPoint).Address, AutonomousObjects = new List<ReplicatiorBase>(), NetworkId = NetIdBuffer++ };
         Debug.Log("Client IPAddress : " + c.address);
         ClientDataList.Add(c);
+        listener.BeginAcceptTcpClient(AcceptedClientCallback, listener);
+    }
+
+    void SendInitialMessage(ClientDataContainer client)
+    {
         if (RepObjects.Count > 0)
         {
-            string InitRepData = "";
+            string InitRepData = "Assign," + client.NetworkId + "$";
             RepObjects.ForEach((obj) =>
             {
-                InitRepData += "NewRepObj" + "," + obj.RepPrefabName + "," + Serializer.Vector3ToString(obj.transform.position) + "," + 
+                InitRepData += "NewRepObj" + "," + obj.RepPrefabName + "," + Serializer.Vector3ToString(obj.transform.position) + "," +
                 Serializer.Vector3ToString(obj.transform.eulerAngles) + "," + obj.transform.parent.gameObject.name + "," + obj.Id + "$";
             });
-            client.Client.Send(encoding.GetBytes(InitRepData));
+            SendTcpPacket(client, encoding.GetBytes(InitRepData));
         }
     }
 
-    void ClientDisconnected()
+    void SendTcpPacket(ClientDataContainer client, byte[] data)
     {
+        try
+        {
+            client.TcpSocket.Client.Send(data);
+        }
+        catch
+        {
+            ClientDisconnected(client);
+        }
+    }
 
+    void ClientDisconnected(ClientDataContainer client)
+    {
+        ClientDataList.Remove(client);
     }
 
     void RegistNewReplicationObject(ReplicatiorBase replicatior, string PrefabName)
@@ -174,6 +193,9 @@ foreach (var I in Dns.GetHostAddresses(Dns.GetHostName()))
         {
             case "NewAutoObj":
                 CreateAutonomousPrefab(vs[1], vs[2], Serializer.StringToVector3(vs[3], vs[4], vs[5]), Serializer.StringToVector3(vs[6], vs[7], vs[8]), vs[9], client);
+                break;
+            case "RequestInitInfo":
+                SendInitialMessage(client);
                 break;
             case "RPCOS": //RPC On Server
                 ProcessRPC(vs[1], vs[2], vs[3]);
