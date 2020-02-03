@@ -75,7 +75,7 @@ public class NetworkManager_Client : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (OwnTcpSocket == null && !OwnTcpSocket.Connected)
+        if (OwnTcpSocket == null || !OwnTcpSocket.Connected)
             return;
         if (OwnTcpSocket.Available > 0)
         {
