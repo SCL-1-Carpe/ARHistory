@@ -46,7 +46,14 @@ public class NetworkManager_Client : MonoBehaviour
         OwnUdpClient = new UdpClient(UdpPortNum);
         AutonomausObjects = new List<ReplicatiorBase>();
         RepObjPairs = new Dictionary<int, ReplicatiorBase>();
-        OwnTcpSocket.BeginConnect(TargetIP, TcpPortNum, ConnectedToServerCallback, 0);
+        try
+        {
+            OwnTcpSocket.BeginConnect(TargetIP, TcpPortNum, ConnectedToServerCallback, 0);
+        }
+        catch
+        {
+            Debug.Log("Couldnt find Server");
+        }
     }
 
     void ConnectedToServerCallback(System.IAsyncResult ar)
