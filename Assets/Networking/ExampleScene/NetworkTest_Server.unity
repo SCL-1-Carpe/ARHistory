@@ -146,7 +146,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 1207628269}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 80e53927c3bc6a24dbbde7c61038da7b, type: 3}
+  m_Script: {fileID: 11500000, guid: 23afd7be89fa749afb9f4dc98031b1e6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   prefabName: NetworkCube
@@ -258,13 +258,13 @@ MonoBehaviour:
   m_GameObject: {fileID: 1566480418}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f329ba0af1ab05442bf5be9b4668aab0, type: 3}
+  m_Script: {fileID: 11500000, guid: d22ff963faa694ef6950b85d5d269862, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  DOwnIP: 
+  DOwnIP: 192.168.100.101
   LaunchOnStart: 1
-  TcpPortNum: 7890
-  UdpPortNum: 7891
+  TcpPortNum: 7990
+  UdpPortNum: 7995
   RepObjects: []
 --- !u!1 &1936356281
 GameObject:

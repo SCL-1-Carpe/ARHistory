@@ -265,7 +265,10 @@ MonoBehaviour:
   LaunchOnStart: 1
   TcpPortNum: 7890
   UdpPortNum: 7895
+  buffersize: 512
+  buffer: []
   RepObjects: []
+  ObjIdBuffer: 0
 --- !u!1 &1936356281
 GameObject:
   m_ObjectHideFlags: 0
