@@ -49,8 +49,6 @@ public class NetworkManager_Client : MonoBehaviour
 
     public void LaunchNetworkClient()
     {
-        if (!IPAddress.TryParse(TargetIP, out IPAddress ad))
-            return;
         databuffer = new byte[buffersize];
         OwnTcpSocket = new TcpClient();
         OwnUdpClient = new UdpClient(UdpPortNum);
@@ -62,8 +60,8 @@ public class NetworkManager_Client : MonoBehaviour
     void ConnectedToServerCallback(System.IAsyncResult ar)
     {
         OwnTcpSocket.EndConnect(ar);
-        if(OwnTcpSocket.Connected)
-        Debug.Log("Client: Connected to Server");
+        if (OwnTcpSocket.Connected)
+            Debug.Log("Client: Connected to Server");
         OwnTcpSocket.Client.Send(encoding.GetBytes("RequestInitInfo"));
         OwnUdpClient.Send(encoding.GetBytes("InitRep$"), encoding.GetByteCount("InitRep$"), new IPEndPoint(IPAddress.Parse(TargetIP), UdpPortNum));
         //OwnUdpClient.Connect(TargetIP, UdpPortNum);
@@ -77,7 +75,7 @@ public class NetworkManager_Client : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (!OwnTcpSocket.Connected)
+        if (OwnTcpSocket == null && !OwnTcpSocket.Connected)
             return;
         if (OwnTcpSocket.Available > 0)
         {
