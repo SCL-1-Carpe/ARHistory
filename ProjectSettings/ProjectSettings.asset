@@ -662,7 +662,7 @@ PlayerSettings:
     m_ModelFolderPath: 
     m_PortalFolderPath: 
   luminCert:
-    m_CertPath: /Users/itorintaro/Downloads/privatekey/testunmber6350.cert
+    m_CertPath: /Users/Shared/Unity/SCLHistoryAR/privatekey/testunmber6350.cert
     m_SignPackage: 1
   luminIsChannelApp: 0
   luminVersion:
