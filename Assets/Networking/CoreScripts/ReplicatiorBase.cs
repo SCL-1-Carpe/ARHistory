@@ -4,8 +4,17 @@ using UnityEngine;
 
 public class ReplicatiorBase : MonoBehaviour
 {
+    /// <summary>
+    /// Dont Change this variable
+    /// </summary>
     public byte OwnerNetId = 0;
+    /// <summary>
+    /// Dont Change this variable
+    /// </summary>
     public int Id = -1;
+    /// <summary>
+    /// Dont Change this variable
+    /// </summary>
     public string RepPrefabName;
     // Start is called before the first frame update
     void Start()

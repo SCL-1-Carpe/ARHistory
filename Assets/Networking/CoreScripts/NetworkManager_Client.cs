@@ -61,9 +61,14 @@ public class NetworkManager_Client : MonoBehaviour
         OwnTcpSocket.EndConnect(ar);
         if (OwnTcpSocket.Connected)
             Debug.Log("Client: Connected to Server");
-        OwnTcpSocket.Client.Send(encoding.GetBytes("RequestInitInfo"));
+        SendTcpPacket(encoding.GetBytes("RequestInitInfo"));
         OwnUdpClient.Send(encoding.GetBytes("InitRep$"), encoding.GetByteCount("InitRep$"), new IPEndPoint(IPAddress.Parse(TargetIP), UdpPortNum));
         //OwnUdpClient.Connect(TargetIP, UdpPortNum);
+    }
+
+    void SendTcpPacket(byte[] data)
+    {
+        OwnTcpSocket.Client.Send(data);
     }
 
     void NetworkInitialize(byte NewId)
@@ -102,17 +107,28 @@ public class NetworkManager_Client : MonoBehaviour
     /// <param name="ParentName">replicated prefab initial parent name</param>
     public void RequestCreatingNewAutonomousObject(ReplicatiorBase replicatior, string ReplicatedPrefabName, Vector3 pos, Vector3 eular, string ParentName)
     {
-        OwnTcpSocket.Client.Send(encoding.GetBytes("NewAutoObj," + ReplicatedPrefabName + "," + replicatior.gameObject.name + "," + Serializer.Vector3ToString(pos) + "," + Serializer.Vector3ToString(eular) + "," + ParentName));
+        SendTcpPacket(encoding.GetBytes("NewAutoObj," + ReplicatedPrefabName + "," + replicatior.gameObject.name + "," + Serializer.Vector3ToString(pos) + "," + Serializer.Vector3ToString(eular) + "," + ParentName));
     }
 
     public void RequestRPCOnServer(string ServerObjectName, string MethodName, string arg)
     {
-        OwnTcpSocket.Client.Send(encoding.GetBytes("RPCOS" + "," + ServerObjectName + "," + MethodName + "," + arg));
+        SendTcpPacket(encoding.GetBytes("RPCOS," + ServerObjectName + "," + MethodName + "," + arg));
     }
 
-    void AddNewReplicatedObject(ReplicatiorBase replicatior, int Id)
+    public void RequestRPCOnOtherClient(string ObjectName, string MethodName, string arg, byte ClientId)
+    {
+        if (ClientId == NetworkId)
+            ProcessRPC(ObjectName, MethodName, arg);
+        else
+        {
+            SendTcpPacket(encoding.GetBytes("RPCOC," + ClientId + "," + ObjectName + "," + MethodName + "," + arg));
+        }
+    }
+
+    void AddNewReplicatedObject(ReplicatiorBase replicatior, int Id, byte OwnerId)
     {
         replicatior.Id = Id;
+        replicatior.OwnerNetId = OwnerId;
         RepObjPairs.Add(Id, replicatior);
     }
 
@@ -145,10 +161,13 @@ public class NetworkManager_Client : MonoBehaviour
         switch (vs[0])
         {
             case "NewRepObj":
-                CreateReplicatedPrefab(vs[1], Serializer.StringToVector3(vs[2], vs[3], vs[4]), Serializer.StringToVector3(vs[5], vs[6], vs[7]), vs[8], int.Parse(vs[9]));
+                CreateReplicatedPrefab(vs[1], Serializer.StringToVector3(vs[2], vs[3], vs[4]), Serializer.StringToVector3(vs[5], vs[6], vs[7]), vs[8], int.Parse(vs[9]), byte.Parse(vs[10]));
                 break;
             case "AutoObjAdded":
                 AddAdmittedAutonomousObject(vs[1], int.Parse(vs[2]));
+                break;
+            case "RPCOC":
+                ProcessRPC(vs[1], vs[2], vs[3]);
                 break;
             case "Assign":
                 NetworkInitialize(byte.Parse(vs[1]));
@@ -156,7 +175,7 @@ public class NetworkManager_Client : MonoBehaviour
         }
     }
 
-    GameObject CreateReplicatedPrefab(string PrefabName, Vector3 pos, Vector3 eular, string ParentObj, int ObjId)
+    GameObject CreateReplicatedPrefab(string PrefabName, Vector3 pos, Vector3 eular, string ParentObj, int ObjId, byte OwnerId)
     {
         string path = "Prefabs/" + PrefabName;
         GameObject Pobj = (GameObject)Resources.Load(path), parentobj = GameObject.Find(ParentObj), obj;
@@ -165,8 +184,19 @@ public class NetworkManager_Client : MonoBehaviour
         else
             obj = Instantiate(Pobj, pos, Quaternion.Euler(eular.x, eular.y, eular.z));
         ReplicatiorBase replicatior = obj.GetComponent<ReplicatiorBase>();
-        AddNewReplicatedObject(replicatior, ObjId);
+        AddNewReplicatedObject(replicatior, ObjId, OwnerId);
         return obj;
+    }
+
+    void ProcessRPC(string ObjectName, string MethodName, string arg)
+    {
+        GameObject obj = GameObject.Find(ObjectName);
+        if (obj == null)
+        {
+            Debug.Log("Object couldnt find. RPC failed.");
+            return;
+        }
+        obj.SendMessage(MethodName, arg, SendMessageOptions.DontRequireReceiver);
     }
 
     void DecompReplicationData(byte[] data)

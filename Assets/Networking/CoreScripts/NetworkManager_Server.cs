@@ -109,7 +109,7 @@ public class NetworkManager_Server : MonoBehaviour
             RepObjects.ForEach((obj) =>
             {
                 InitRepData += "NewRepObj" + "," + obj.RepPrefabName + "," + Serializer.Vector3ToString(obj.transform.position) + "," +
-                Serializer.Vector3ToString(obj.transform.eulerAngles) + "," + obj.transform.parent.gameObject.name + "," + obj.Id + "$";
+                Serializer.Vector3ToString(obj.transform.eulerAngles) + "," + obj.transform.parent.gameObject.name + "," + obj.Id + "," + obj.OwnerNetId + "$";
             });
             SendTcpPacket(client, encoding.GetBytes(InitRepData));
         }
@@ -130,6 +130,7 @@ public class NetworkManager_Server : MonoBehaviour
     void ClientDisconnected(ClientDataContainer client)
     {
         ClientDataList.Remove(client);
+        Debug.Log("Client Disconnected : " + client.address);
     }
 
     void RegistNewReplicationObject(ReplicatiorBase replicatior, string PrefabName)
@@ -201,6 +202,9 @@ public class NetworkManager_Server : MonoBehaviour
             case "RPCOS": //RPC On Server
                 ProcessRPC(vs[1], vs[2], vs[3]);
                 break;
+            case "RPCOC":
+                HandOutRPC(byte.Parse(vs[1]), vs[2], vs[3], vs[4]);
+                break;
         }
     }
 
@@ -253,7 +257,8 @@ public class NetworkManager_Server : MonoBehaviour
         RegistNewReplicationObject(replicatior, PrefabName);
         ClientDataList.ForEach((c) =>
         {
-            c.TcpSocket.Client.Send(encoding.GetBytes("NewRepObj" + "," + PrefabName + "," + Serializer.Vector3ToString(pos) + "," + Serializer.Vector3ToString(eular) + "," + ParentObjName + "," + replicatior.Id));
+            SendTcpPacket(c, encoding.GetBytes("NewRepObj" + "," + PrefabName + "," + Serializer.Vector3ToString(pos) + "," +
+                Serializer.Vector3ToString(eular) + "," + ParentObjName + "," + replicatior.Id + "," + replicatior.OwnerNetId));
         });
         return obj;
     }
@@ -263,7 +268,8 @@ public class NetworkManager_Server : MonoBehaviour
         RegistNewReplicationObject(replicatior, RepPrefabName);
         ClientDataList.ForEach((c) =>
         {
-            c.TcpSocket.Client.Send(encoding.GetBytes("NewRepObj" + "," + RepPrefabName + "," + Serializer.Vector3ToString(replicatior.transform.position) + "," + Serializer.Vector3ToString(replicatior.transform.eulerAngles) + "," + replicatior.transform.parent.gameObject.name + "," + replicatior.Id));
+            SendTcpPacket(c, encoding.GetBytes("NewRepObj" + "," + RepPrefabName + "," + Serializer.Vector3ToString(replicatior.transform.position) + "," +
+                Serializer.Vector3ToString(replicatior.transform.eulerAngles) + "," + replicatior.transform.parent.gameObject.name + "," + replicatior.Id + "," + replicatior.OwnerNetId));
         });
     }
 
@@ -287,13 +293,13 @@ public class NetworkManager_Server : MonoBehaviour
         ClientDataList.ForEach((c) =>
         {
             if (c.TcpSocket != Owner.TcpSocket)
-                c.TcpSocket.Client.Send(encoding.GetBytes("NewRepObj," + PrefabName + "," + Serializer.Vector3ToString(pos) + "," + Serializer.Vector3ToString(eular) + "," + ParentObjName + "," + replicatior.Id));
+                SendTcpPacket(c, encoding.GetBytes("NewRepObj," + PrefabName + "," + Serializer.Vector3ToString(pos) + "," + Serializer.Vector3ToString(eular) + "," + ParentObjName + "," + replicatior.Id));
             else
-                c.TcpSocket.Client.Send(encoding.GetBytes("AutoObjAdded," + ObjName + "," + replicatior.Id));
+                SendTcpPacket(c, encoding.GetBytes("AutoObjAdded," + ObjName + "," + replicatior.Id));
         });
     }
 
-    void ProcessRPC(string ObjName, string MethodName, string value)
+    void ProcessRPC(string ObjName, string MethodName, string arg)
     {
         GameObject obj = GameObject.Find(ObjName);
         if (obj == null)
@@ -301,7 +307,17 @@ public class NetworkManager_Server : MonoBehaviour
             Debug.Log("Object couldnt find. RPC failed");
             return;
         }
-        obj.SendMessage(MethodName, value, SendMessageOptions.DontRequireReceiver);
+        obj.SendMessage(MethodName, arg, SendMessageOptions.DontRequireReceiver);
+    }
+
+    void HandOutRPC(byte ClientId, string ObjName, string MethodName, string arg)
+    {
+        if (ClientId == 0)
+            ProcessRPC(ObjName, MethodName, arg);
+        else
+        {
+            SendTcpPacket(ClientDataList.Find((c) => c.NetworkId == ClientId), encoding.GetBytes("RPCOC," + ObjName + "," + MethodName + "," + arg));
+        }
     }
 
     void Update()
