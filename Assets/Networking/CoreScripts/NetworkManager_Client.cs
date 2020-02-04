@@ -11,6 +11,11 @@ public class NetworkManager_Client : MonoBehaviour
 {
     public IPAddress OwnIP;
     public string DOwnIP, TargetIP;
+    public string m_TargetIP
+    {
+        get { return TargetIP; }
+        set { TargetIP = value; }
+    }
     UdpClient OwnUdpClient;
     TcpClient OwnTcpSocket;
     [SerializeField]

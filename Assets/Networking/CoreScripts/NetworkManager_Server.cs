@@ -138,6 +138,11 @@ public class NetworkManager_Server : MonoBehaviour
         }
     }
 
+    void SendFile(ClientDataContainer client,string FilePath)
+    {
+        client.TcpSocket.Client.SendFile(FilePath);
+    }
+
     void ClientDisconnected(ClientDataContainer client)
     {
         ClientDataList.Remove(client);
@@ -242,8 +247,7 @@ public class NetworkManager_Server : MonoBehaviour
 
     void HandOutAutonomousData(int Id, byte[] data)
     {
-        ReplicatiorBase Target;
-        if (RepObjPairs.TryGetValue(Id, out Target))
+        if (RepObjPairs.TryGetValue(Id, out ReplicatiorBase Target))
         {
             Target.ReceiveAutonomousData(data);
         }
@@ -274,18 +278,23 @@ public class NetworkManager_Server : MonoBehaviour
         RegistNewReplicationObject(replicatior, PrefabName);
         ClientDataList.ForEach((c) =>
         {
-            SendTcpPacket(c, encoding.GetBytes("NewRepObj" + "," + PrefabName + "," + Serializer.Vector3ToString(pos) + "," +
+            SendTcpPacket(c, encoding.GetBytes("NewRepObj," + PrefabName + "," + Serializer.Vector3ToString(pos) + "," +
                 Serializer.Vector3ToString(eular) + "," + ParentObjName + "," + replicatior.Id + "," + replicatior.OwnerNetId));
         });
         return obj;
     }
 
+    /// <summary>
+    /// Replicate Object as RepPrefabObj
+    /// </summary>
+    /// <param name="replicatior"></param>
+    /// <param name="RepPrefabName"></param>
     public void StartReplicateObject(ReplicatiorBase replicatior, string RepPrefabName)
     {
         RegistNewReplicationObject(replicatior, RepPrefabName);
         ClientDataList.ForEach((c) =>
         {
-            SendTcpPacket(c, encoding.GetBytes("NewRepObj" + "," + RepPrefabName + "," + Serializer.Vector3ToString(replicatior.transform.position) + "," +
+            SendTcpPacket(c, encoding.GetBytes("NewRepObj," + RepPrefabName + "," + Serializer.Vector3ToString(replicatior.transform.position) + "," +
                 Serializer.Vector3ToString(replicatior.transform.eulerAngles) + "," + replicatior.transform.parent.gameObject.name + "," + replicatior.Id + "," + replicatior.OwnerNetId));
         });
     }
