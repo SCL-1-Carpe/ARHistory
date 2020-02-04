@@ -30,6 +30,16 @@ public class NetworkManager_Client : MonoBehaviour
     Encoding encoding = Encoding.ASCII;
     byte[] databuffer;
 
+    public delegate void ConnectionNotification();
+    public delegate void NetworkDataHandler(byte[] data);
+    public delegate void ReplicatedObjectNotification(ReplicatiorBase replicatior);
+
+    public ConnectionNotification OnConnectedToServer;
+    public ReplicatedObjectNotification OnNewRepObjectAdded;
+    public ReplicatedObjectNotification OnNewAutonomousObjectAdmitted;
+    public NetworkDataHandler OnTcpPacketReceived;
+    public NetworkDataHandler OnUdpPacketReceived;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -63,6 +73,7 @@ public class NetworkManager_Client : MonoBehaviour
             Debug.Log("Client: Connected to Server");
         SendTcpPacket(encoding.GetBytes("RequestInitInfo"));
         OwnUdpClient.Send(encoding.GetBytes("InitRep$"), encoding.GetByteCount("InitRep$"), new IPEndPoint(IPAddress.Parse(TargetIP), UdpPortNum));
+        OnConnectedToServer.Invoke();
         //OwnUdpClient.Connect(TargetIP, UdpPortNum);
     }
 
@@ -86,6 +97,7 @@ public class NetworkManager_Client : MonoBehaviour
             OwnTcpSocket.Client.Receive(databuffer);
             Debug.Log("Tcp Received :" + encoding.GetString(databuffer));
             DecompServerMessage(databuffer);
+            OnTcpPacketReceived.Invoke(databuffer);
         }
         if (OwnUdpClient.Available > 0)
         {
@@ -93,6 +105,7 @@ public class NetworkManager_Client : MonoBehaviour
             databuffer = OwnUdpClient.Receive(ref endPoint);
             Debug.Log("Udp Received : " + encoding.GetString(databuffer));
             DecompReplicationData(databuffer);
+            OnUdpPacketReceived.Invoke(databuffer);
         }
         ReplicateAutonomousObject();
     }
@@ -130,6 +143,7 @@ public class NetworkManager_Client : MonoBehaviour
         replicatior.Id = Id;
         replicatior.OwnerNetId = OwnerId;
         RepObjPairs.Add(Id, replicatior);
+        OnNewRepObjectAdded.Invoke(replicatior);
     }
 
     void AddAdmittedAutonomousObject(string ObjName, int ObjId)
@@ -141,6 +155,7 @@ public class NetworkManager_Client : MonoBehaviour
         replicatior.Id = ObjId;
         replicatior.OwnerNetId = NetworkId;
         AutonomausObjects.Add(replicatior);
+        OnNewAutonomousObjectAdmitted.Invoke(replicatior);
         Debug.Log("New Autonomous Object : " + ObjName);
     }
 

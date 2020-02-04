@@ -54,6 +54,16 @@ public class NetworkManager_Server : MonoBehaviour
     int ObjIdBuffer = 0;
     byte NetIdBuffer = 1;
 
+    public delegate void ClientNotification(ClientDataContainer clientData);
+    public delegate void NetworkDataHandler(byte[] data, ClientDataContainer clientData);
+    public delegate void ReplicatedObjectNotification(ReplicatiorBase replicatior);
+    public ReplicatedObjectNotification OnNewRepObjectAdded;
+    public ReplicatedObjectNotification OnNewAutonomousObjectAdded;
+    public ClientNotification OnNewClientConnected;
+    public ClientNotification OnClientDisconnected;
+    public NetworkDataHandler OnTcpPacketReceived;
+    public NetworkDataHandler OnUdpPacketReceived;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -98,6 +108,7 @@ public class NetworkManager_Server : MonoBehaviour
         ClientDataContainer c = new ClientDataContainer() { TcpSocket = client, address = ((IPEndPoint)client.Client.RemoteEndPoint).Address, AutonomousObjects = new List<ReplicatiorBase>(), NetworkId = NetIdBuffer++ };
         Debug.Log("Client IPAddress : " + c.address);
         ClientDataList.Add(c);
+        OnNewClientConnected.Invoke(c);
         listener.BeginAcceptTcpClient(AcceptedClientCallback, listener);
     }
 
@@ -130,6 +141,7 @@ public class NetworkManager_Server : MonoBehaviour
     void ClientDisconnected(ClientDataContainer client)
     {
         ClientDataList.Remove(client);
+        OnClientDisconnected.Invoke(client);
         Debug.Log("Client Disconnected : " + client.address);
     }
 
@@ -139,6 +151,7 @@ public class NetworkManager_Server : MonoBehaviour
         replicatior.Id = ObjIdBuffer;
         replicatior.RepPrefabName = PrefabName;
         RepObjPairs.Add(ObjIdBuffer++, replicatior);
+        OnNewRepObjectAdded.Invoke(replicatior);
     }
 
     void RegistNewAutonomousObject(ClientDataContainer client, ReplicatiorBase replicatior, string PrefabName)
@@ -146,6 +159,7 @@ public class NetworkManager_Server : MonoBehaviour
         RegistNewReplicationObject(replicatior, PrefabName);
         replicatior.OwnerNetId = client.NetworkId;
         client.AutonomousObjects.Add(replicatior);
+        OnNewAutonomousObjectAdded.Invoke(replicatior);
     }
 
     byte[] CreateReplicationData(ClientDataContainer client)
@@ -216,7 +230,7 @@ public class NetworkManager_Server : MonoBehaviour
         {
             if (s.Length < 1)
                 return;
-            if (s.IndexOf(':') >= 0)
+            if (s.IndexOf(':') < 0)
                 return;
             int Id = int.Parse(s.Substring(0, s.IndexOf(':')));
             HandOutAutonomousData(Id, encoding.GetBytes(s.Substring(s.IndexOf(':') + 1)));
@@ -332,6 +346,7 @@ public class NetworkManager_Server : MonoBehaviour
                 c.TcpSocket.Client.Receive(buffer);
                 Debug.Log("Tcp Received : " + encoding.GetString(buffer));
                 DecompClientRequest(buffer, c);
+                OnTcpPacketReceived.Invoke(buffer, c);
             }
 
         });
@@ -340,7 +355,9 @@ public class NetworkManager_Server : MonoBehaviour
             IPEndPoint endPoint = null;
             buffer = UdpSocket.Receive(ref endPoint);
             Debug.Log("Udp Received : " + encoding.GetString(buffer));
-            DecompClientAutonomousData(buffer, ClientDataList.Find((c) => c.address == endPoint.Address));
+            ClientDataContainer client = ClientDataList.Find((c) => c.address == endPoint.Address);
+            DecompClientAutonomousData(buffer, client);
+            OnUdpPacketReceived.Invoke(buffer, client);
         }
         Replicate();
     }
