@@ -201,7 +201,7 @@ public class NetworkManager_Server : MonoBehaviour
     void DecompClientRequest(byte[] data, ClientDataContainer client)
     {
         string datastr = encoding.GetString(data);
-        string[] vs = datastr.Split('$');
+        string[] vs = datastr.Contains('$') ? datastr.Split('$') : new string[] { datastr };
         foreach (string s in vs)
         {
             ClientRequest(s, client);
@@ -210,7 +210,7 @@ public class NetworkManager_Server : MonoBehaviour
 
     void ClientRequest(string request, ClientDataContainer client)
     {
-        string[] vs = request.Split(',');
+        string[] vs = request.Contains(',') ? request.Split(',') : new string[] { request };
         switch (vs[0])
         {
             case "NewAutoObj":
@@ -234,7 +234,7 @@ public class NetworkManager_Server : MonoBehaviour
     void DecompClientAutonomousData(byte[] data, ClientDataContainer client)
     {
         string datastr = encoding.GetString(data);
-        string[] vs = datastr.Split('$');
+        string[] vs = datastr.Contains('$') ? datastr.Split('$') : new string[] { datastr };
         foreach (string s in vs)
         {
             if (s.Length < 1)

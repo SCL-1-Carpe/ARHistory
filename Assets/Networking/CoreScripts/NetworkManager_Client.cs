@@ -20,7 +20,7 @@ public class NetworkManager_Client : MonoBehaviour
     TcpClient OwnTcpSocket;
     [SerializeField]
     bool LaunchOnStart;
-    byte NetworkId;
+    public byte NetworkId;
     [SerializeField]
     int TcpPortNum = 7890, UdpPortNum = 7891;
     /// <summary>
@@ -76,7 +76,7 @@ public class NetworkManager_Client : MonoBehaviour
         OwnTcpSocket.EndConnect(ar);
         if (OwnTcpSocket.Connected)
             Debug.Log("Client: Connected to Server");
-        SendTcpPacket(encoding.GetBytes("RequestInitInfo"));
+        SendTcpPacket(encoding.GetBytes("RequestInitInfo$"));
         OwnUdpClient.Send(encoding.GetBytes("InitRep$"), encoding.GetByteCount("InitRep$"), new IPEndPoint(IPAddress.Parse(TargetIP), UdpPortNum));
         if (OnConnectedToServer != null)
             OnConnectedToServer.Invoke();
@@ -128,7 +128,8 @@ public class NetworkManager_Client : MonoBehaviour
     /// <param name="ParentName">replicated prefab initial parent name</param>
     public void RequestCreatingNewAutonomousObject(ReplicatiorBase replicatior, string ReplicatedPrefabName, Vector3 pos, Vector3 eular, string ParentName)
     {
-        SendTcpPacket(encoding.GetBytes("NewAutoObj," + ReplicatedPrefabName + "," + replicatior.gameObject.name + "," + Serializer.Vector3ToString(pos) + "," + Serializer.Vector3ToString(eular) + "," + ParentName));
+        SendTcpPacket(encoding.GetBytes("NewAutoObj," + ReplicatedPrefabName + "," + replicatior.gameObject.name + "," + Serializer.Vector3ToString(pos) +
+            "," + Serializer.Vector3ToString(eular) + "," + ParentName));
     }
 
     public void RequestRPCOnServer(string ServerObjectName, string MethodName, string arg)
@@ -230,6 +231,8 @@ public class NetworkManager_Client : MonoBehaviour
         foreach (string s in vs)
         {
             if (s.Length < 1)
+                return;
+            if (s.IndexOf(':') < 0)
                 return;
             int Id = int.Parse(s.Substring(0, s.IndexOf(':')));
             HandOutReplicationData(Id, encoding.GetBytes(s.Substring(s.IndexOf(':') + 1)));
