@@ -261,7 +261,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d22ff963faa694ef6950b85d5d269862, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  DOwnIP: 192.168.100.101
+  DOwnIP: 
   LaunchOnStart: 1
   TcpPortNum: 7990
   UdpPortNum: 7995
