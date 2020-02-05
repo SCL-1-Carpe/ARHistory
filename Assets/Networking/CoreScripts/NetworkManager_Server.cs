@@ -6,16 +6,6 @@ using System.Text;
 using System.Linq;
 using UnityEngine;
 
-public struct ReceivedData
-{
-    public Socket socket;
-    public byte[] data;
-    public bool IsTcp;
-    public static ReceivedData Create(int buffersize, Socket soc, bool Tcp)
-    {
-        return new ReceivedData() { data = new byte[buffersize], socket = soc, IsTcp = Tcp };
-    }
-}
 public struct ClientDataContainer
 {
     public IPAddress address;
@@ -94,9 +84,16 @@ public class NetworkManager_Server : MonoBehaviour
     public void LaunchNetworkServer()
     {
         buffer = new byte[buffersize];
-        listener = new TcpListener(IPAddress.Any, TcpPortNum);
-        listener.Start();
-        System.IAsyncResult result = listener.BeginAcceptTcpClient(AcceptedClientCallback, listener);
+        try
+        {
+            listener = new TcpListener(IPAddress.Any, TcpPortNum);
+            listener.Start();
+            System.IAsyncResult result = listener.BeginAcceptTcpClient(AcceptedClientCallback, listener);
+        }
+        catch
+        {
+            Debug.Log("Couldnt Launch Server");
+        }
         UdpSocket = new UdpClient(UdpPortNum);
         server = this;
     }
@@ -108,7 +105,8 @@ public class NetworkManager_Server : MonoBehaviour
         ClientDataContainer c = new ClientDataContainer() { TcpSocket = client, address = ((IPEndPoint)client.Client.RemoteEndPoint).Address, AutonomousObjects = new List<ReplicatiorBase>(), NetworkId = NetIdBuffer++ };
         Debug.Log("Client IPAddress : " + c.address);
         ClientDataList.Add(c);
-        OnNewClientConnected.Invoke(c);
+        if (OnNewClientConnected != null)
+            OnNewClientConnected.Invoke(c);
         listener.BeginAcceptTcpClient(AcceptedClientCallback, listener);
     }
 
@@ -138,7 +136,7 @@ public class NetworkManager_Server : MonoBehaviour
         }
     }
 
-    void SendFile(ClientDataContainer client,string FilePath)
+    void SendFile(ClientDataContainer client, string FilePath)
     {
         client.TcpSocket.Client.SendFile(FilePath);
     }
@@ -146,7 +144,8 @@ public class NetworkManager_Server : MonoBehaviour
     void ClientDisconnected(ClientDataContainer client)
     {
         ClientDataList.Remove(client);
-        OnClientDisconnected.Invoke(client);
+        if (OnClientDisconnected != null)
+            OnClientDisconnected.Invoke(client);
         Debug.Log("Client Disconnected : " + client.address);
     }
 
@@ -156,7 +155,8 @@ public class NetworkManager_Server : MonoBehaviour
         replicatior.Id = ObjIdBuffer;
         replicatior.RepPrefabName = PrefabName;
         RepObjPairs.Add(ObjIdBuffer++, replicatior);
-        OnNewRepObjectAdded.Invoke(replicatior);
+        if (OnNewRepObjectAdded != null)
+            OnNewRepObjectAdded.Invoke(replicatior);
     }
 
     void RegistNewAutonomousObject(ClientDataContainer client, ReplicatiorBase replicatior, string PrefabName)
@@ -164,7 +164,8 @@ public class NetworkManager_Server : MonoBehaviour
         RegistNewReplicationObject(replicatior, PrefabName);
         replicatior.OwnerNetId = client.NetworkId;
         client.AutonomousObjects.Add(replicatior);
-        OnNewAutonomousObjectAdded.Invoke(replicatior);
+        if (OnNewAutonomousObjectAdded != null)
+            OnNewAutonomousObjectAdded.Invoke(replicatior);
     }
 
     byte[] CreateReplicationData(ClientDataContainer client)
@@ -183,7 +184,7 @@ public class NetworkManager_Server : MonoBehaviour
     }
 
     /// <summary>
-    /// Send ReplicationData to all client.
+    /// Send ReplicationData to all client. Dont recommend manually call.
     /// </summary>
     public void Replicate()
     {
@@ -346,7 +347,7 @@ public class NetworkManager_Server : MonoBehaviour
         }
     }
 
-    void MultiCastRPC(string ObjName,string MethodName,string arg)
+    void MultiCastRPC(string ObjName, string MethodName, string arg)
     {
         ProcessRPC(ObjName, MethodName, arg);
         ClientDataList.ForEach((c) => SendTcpPacket(c, encoding.GetBytes("RPCOC," + ObjName + "," + MethodName + "," + arg)));
@@ -364,7 +365,8 @@ public class NetworkManager_Server : MonoBehaviour
                 c.TcpSocket.Client.Receive(buffer);
                 Debug.Log("Tcp Received : " + encoding.GetString(buffer));
                 DecompClientRequest(buffer, c);
-                OnTcpPacketReceived.Invoke(buffer, c);
+                if (OnTcpPacketReceived != null)
+                    OnTcpPacketReceived.Invoke(buffer, c);
             }
 
         });
@@ -375,7 +377,8 @@ public class NetworkManager_Server : MonoBehaviour
             Debug.Log("Udp Received : " + encoding.GetString(buffer));
             ClientDataContainer client = ClientDataList.Find((c) => c.address == endPoint.Address);
             DecompClientAutonomousData(buffer, client);
-            OnUdpPacketReceived.Invoke(buffer, client);
+            if (OnUdpPacketReceived != null)
+                OnUdpPacketReceived.Invoke(buffer, client);
         }
         Replicate();
     }
