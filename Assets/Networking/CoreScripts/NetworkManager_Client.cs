@@ -78,7 +78,8 @@ public class NetworkManager_Client : MonoBehaviour
             Debug.Log("Client: Connected to Server");
         SendTcpPacket(encoding.GetBytes("RequestInitInfo"));
         OwnUdpClient.Send(encoding.GetBytes("InitRep$"), encoding.GetByteCount("InitRep$"), new IPEndPoint(IPAddress.Parse(TargetIP), UdpPortNum));
-        OnConnectedToServer.Invoke();
+        if (OnConnectedToServer != null)
+            OnConnectedToServer.Invoke();
         //OwnUdpClient.Connect(TargetIP, UdpPortNum);
     }
 
@@ -102,7 +103,8 @@ public class NetworkManager_Client : MonoBehaviour
             OwnTcpSocket.Client.Receive(databuffer);
             Debug.Log("Tcp Received :" + encoding.GetString(databuffer));
             DecompServerMessage(databuffer);
-            OnTcpPacketReceived.Invoke(databuffer);
+            if (OnTcpPacketReceived != null)
+                OnTcpPacketReceived.Invoke(databuffer);
         }
         if (OwnUdpClient.Available > 0)
         {
@@ -110,7 +112,8 @@ public class NetworkManager_Client : MonoBehaviour
             databuffer = OwnUdpClient.Receive(ref endPoint);
             Debug.Log("Udp Received : " + encoding.GetString(databuffer));
             DecompReplicationData(databuffer);
-            OnUdpPacketReceived.Invoke(databuffer);
+            if (OnUdpPacketReceived != null)
+                OnUdpPacketReceived.Invoke(databuffer);
         }
         ReplicateAutonomousObject();
     }
@@ -148,7 +151,8 @@ public class NetworkManager_Client : MonoBehaviour
         replicatior.Id = Id;
         replicatior.OwnerNetId = OwnerId;
         RepObjPairs.Add(Id, replicatior);
-        OnNewRepObjectAdded.Invoke(replicatior);
+        if (OnNewRepObjectAdded != null)
+            OnNewRepObjectAdded.Invoke(replicatior);
     }
 
     void AddAdmittedAutonomousObject(string ObjName, int ObjId)
@@ -160,7 +164,8 @@ public class NetworkManager_Client : MonoBehaviour
         replicatior.Id = ObjId;
         replicatior.OwnerNetId = NetworkId;
         AutonomausObjects.Add(replicatior);
-        OnNewAutonomousObjectAdmitted.Invoke(replicatior);
+        if (OnNewAutonomousObjectAdmitted != null)
+            OnNewAutonomousObjectAdmitted.Invoke(replicatior);
         Debug.Log("New Autonomous Object : " + ObjName);
     }
 
