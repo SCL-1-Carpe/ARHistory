@@ -76,7 +76,7 @@ public class NetworkManager_Client : MonoBehaviour
         OwnTcpSocket.EndConnect(ar);
         if (OwnTcpSocket.Connected)
             Debug.Log("Client: Connected to Server");
-        SendTcpPacket(encoding.GetBytes("RequestInitInfo$"));
+        SendTcpPacket(encoding.GetBytes("Init$"));
         OwnUdpClient.Send(encoding.GetBytes("InitRep$"), encoding.GetByteCount("InitRep$"), new IPEndPoint(IPAddress.Parse(TargetIP), UdpPortNum));
         if (OnConnectedToServer != null)
             OnConnectedToServer.Invoke();
@@ -109,11 +109,11 @@ public class NetworkManager_Client : MonoBehaviour
         if (OwnUdpClient.Available > 0)
         {
             IPEndPoint endPoint = null;
-            databuffer = OwnUdpClient.Receive(ref endPoint);
-            Debug.Log("Udp Received : " + encoding.GetString(databuffer));
-            DecompReplicationData(databuffer);
+            byte[] Udpdatabuffer = OwnUdpClient.Receive(ref endPoint);
+            Debug.Log("Udp Received : " + encoding.GetString(Udpdatabuffer));
+            DecompReplicationData(Udpdatabuffer);
             if (OnUdpPacketReceived != null)
-                OnUdpPacketReceived.Invoke(databuffer);
+                OnUdpPacketReceived.Invoke(Udpdatabuffer);
         }
         ReplicateAutonomousObject();
     }
@@ -172,7 +172,8 @@ public class NetworkManager_Client : MonoBehaviour
 
     void DecompServerMessage(byte[] data)
     {
-        string[] vs = encoding.GetString(data).Split('$');
+        string datastr = encoding.GetString(data);
+        string[] vs = datastr.Contains('$') ? datastr.Split('$') : new string[] { datastr };
         foreach (string s in vs)
         {
             ProcessServerMessage(s);
@@ -181,9 +182,7 @@ public class NetworkManager_Client : MonoBehaviour
 
     void ProcessServerMessage(string mes)
     {
-        string[] vs = mes.Split(',');
-        if (vs.Length < 1)
-            return;
+        string[] vs = mes.Contains(',') ? mes.Split(',') : new string[] { mes };
         switch (vs[0])
         {
             case "NewRepObj":
