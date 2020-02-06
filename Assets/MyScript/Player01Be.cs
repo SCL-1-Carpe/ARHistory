@@ -9,6 +9,9 @@ namespace MagicLeap {
         [SerializeField] GameObject Player01;
         [SerializeField] bool ThisIsPlayer01 = false;
         [SerializeField] MyInputCo4135 myInputCo4135;
+        [SerializeField] float MukiKando = 0.01f;
+        [SerializeField] GameObject MainCamera;
+
 
         private Vector3 Player_pos; //プレイヤーのポジション
 
@@ -36,15 +39,24 @@ namespace MagicLeap {
         {
             DoingWalking();
 
+            Vector3 diff = transform.position - Player_pos;
 
+
+            if (diff.magnitude > MukiKando) //ベクトルの長さが0.01fより大きい場合にプレイヤーの向きを変える処理を入れる(0では入れないので）
+            {
+                transform.rotation = Quaternion.LookRotation(diff);  //ベクトルの情報をQuaternion.LookRotationに引き渡し回転量を取得しプレイヤーを回転させる
+
+                Player_pos = transform.position; //プレイヤーの位置を更新
+            }
+
+           
         }
 
         void DoingWalking()
         {
-
-            Player.transform.position += WalkingSpeed * myInputCo4135.updatePosition;
-
-
+            Vector3 AA = MainCamera.transform.rotation * myInputCo4135.updatePosition * Time.deltaTime * WalkingSpeed;
+            AA.y = 0;
+            Player.transform.position += AA;
         }
 
         void DoingWalking2()
