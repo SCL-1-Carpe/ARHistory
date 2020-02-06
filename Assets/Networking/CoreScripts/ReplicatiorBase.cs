@@ -16,17 +16,12 @@ public class ReplicatiorBase : MonoBehaviour
     /// Dont Change this variable
     /// </summary>
     public string RepPrefabName;
-    // Start is called before the first frame update
-    void Start()
-    {
 
+    public bool IsAutonomousObject()
+    {
+        return OwnerNetId != 0;
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-
-    }
     /// <summary>
     /// For Server.
     /// Return Byte Array for Replication.
@@ -76,6 +71,7 @@ public class ReplicatiorBase : MonoBehaviour
     {
         return !client.AutonomousObjects.Contains(this);
     }
+
     /// <summary>
     /// Available Only On Client. Only for AutonomousObject
     /// </summary>
