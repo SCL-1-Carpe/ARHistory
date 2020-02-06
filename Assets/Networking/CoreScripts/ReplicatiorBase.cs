@@ -11,6 +11,10 @@ public class ReplicatiorBase : MonoBehaviour
     /// <summary>
     /// Dont Change this variable
     /// </summary>
+    public byte LocalHostNetId = 0;
+    /// <summary>
+    /// Dont Change this variable
+    /// </summary>
     public int Id = -1;
     /// <summary>
     /// Dont Change this variable

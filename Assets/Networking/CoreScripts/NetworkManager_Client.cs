@@ -152,6 +152,7 @@ public class NetworkManager_Client : MonoBehaviour
     {
         replicatior.Id = Id;
         replicatior.OwnerNetId = OwnerId;
+        replicatior.LocalHostNetId = NetworkId;
         RepObjPairs.Add(Id, replicatior);
         if (OnNewRepObjectAdded != null)
             OnNewRepObjectAdded.Invoke(replicatior);
@@ -165,6 +166,7 @@ public class NetworkManager_Client : MonoBehaviour
         ReplicatiorBase replicatior = obj.GetComponent<ReplicatiorBase>();
         replicatior.Id = ObjId;
         replicatior.OwnerNetId = NetworkId;
+        replicatior.LocalHostNetId = NetworkId;
         AutonomausObjects.Add(replicatior);
         if (OnNewAutonomousObjectAdmitted != null)
             OnNewAutonomousObjectAdmitted.Invoke(replicatior);
