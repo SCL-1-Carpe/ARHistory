@@ -12,7 +12,6 @@ public class NumberInput1712 : MonoBehaviour
     [System.NonSerialized] public string yoOutcome="";
     [SerializeField] bool InitializeMozi = true;
 
-
     // Start is called before the first frame update
     void Start()
     {

@@ -16,6 +16,7 @@ public class NetworkManager_Client : MonoBehaviour
         get { return TargetIP; }
         set { TargetIP = value; }
     }
+
     UdpClient OwnUdpClient;
     TcpClient OwnTcpSocket;
     [SerializeField]
