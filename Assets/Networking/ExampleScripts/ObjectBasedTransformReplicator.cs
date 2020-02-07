@@ -16,7 +16,7 @@ public class ObjectBasedTransformReplicator : ReplicatiorBase
         float length = (CoordinateBaseObject.transform.position - transform.position).magnitude;
         Vector3 vec = (transform.position - CoordinateBaseObject.transform.position).normalized;
         Vector3 eular = transform.eulerAngles - CoordinateBaseObject.transform.eulerAngles;
-        return NetworkManager_Server.encoding.GetBytes(Serializer.Vector3ToString(vec) + "," + length + "," + Serializer.Vector3ToString(eular));
+        return NetworkManager_Server.encoding.GetBytes(Serializer.Vector3ToString(vec,3) + "," + length + "," + Serializer.Vector3ToString(eular,0));
     }
 
     public override byte[] GetAutonomousData()
