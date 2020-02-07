@@ -6,6 +6,11 @@ public class ObjectBasedTransformReplicator : ReplicatiorBase
 {
     public GameObject CoordinateBaseObject;
 
+    private void Start()
+    {
+        CoordinateBaseObject = GameObject.Find("COBase");
+    }
+
     public override byte[] GetReplicationData()
     {
         float length = (CoordinateBaseObject.transform.position - transform.position).magnitude;
