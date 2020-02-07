@@ -25,6 +25,10 @@ public class ReplicatiorBase : MonoBehaviour
     {
         return OwnerNetId != 0;
     }
+    bool IsServer()
+    {
+        return LocalHostNetId == 0;
+    }
 
     /// <summary>
     /// For Server.
