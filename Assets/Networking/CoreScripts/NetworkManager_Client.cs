@@ -36,11 +36,12 @@ public class NetworkManager_Client : MonoBehaviour
     Encoding encoding = Encoding.ASCII;
     byte[] databuffer;
 
-    public delegate void ConnectionNotification();
+    public delegate void ConnectionNotification(NetworkManager_Client client);
     public delegate void NetworkDataHandler(byte[] data);
     public delegate void ReplicatedObjectNotification(ReplicatiorBase replicatior);
 
     public ConnectionNotification OnConnectedToServer;
+    public ConnectionNotification OnAssignedNetwork;
     public ReplicatedObjectNotification OnNewRepObjectAdded;
     public ReplicatedObjectNotification OnNewAutonomousObjectAdmitted;
     public NetworkDataHandler OnTcpPacketReceived;
@@ -80,7 +81,7 @@ public class NetworkManager_Client : MonoBehaviour
         SendTcpPacket(encoding.GetBytes("Init$"));
         OwnUdpClient.Send(encoding.GetBytes("InitRep$"), encoding.GetByteCount("InitRep$"), new IPEndPoint(IPAddress.Parse(TargetIP), UdpPortNum));
         if (OnConnectedToServer != null)
-            OnConnectedToServer.Invoke();
+            OnConnectedToServer.Invoke(this);
         //OwnUdpClient.Connect(TargetIP, UdpPortNum);
     }
 
@@ -92,6 +93,8 @@ public class NetworkManager_Client : MonoBehaviour
     void NetworkInitialize(byte NewId)
     {
         NetworkId = NewId;
+        if (OnAssignedNetwork != null)
+            OnAssignedNetwork.Invoke(this);
     }
 
     // Update is called once per frame
