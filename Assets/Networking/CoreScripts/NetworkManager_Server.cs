@@ -283,6 +283,39 @@ public class NetworkManager_Server : MonoBehaviour
     }
 
     /// <summary>
+    /// Create Gameobject replicated On all Client. On LocalHost, Object beact as LocalPrefab. On Client, Object beact as NetworkPrefab. <!warning> Prefab must contain Replicator!
+    /// </summary>
+    /// <paramref name="LocalPrefabName"/> Local Replicated Object. Search in Resources/Prefabs/...
+    /// <param name="NetworkPrefabName"> Replicated Object On Networking. Search in Resources/Prefabs/... </param>
+    /// <param name="pos"></param>
+    /// <param name="eular"></param>
+    /// <param name="ParentObjName"></param>
+    /// <returns></returns>
+    public GameObject CreateNetworkPrefab(string LocalPrefabName,string NetworkPrefabName, Vector3 pos, Vector3 eular, string ParentObjName)
+    {
+        string path = "Prefabs/" + LocalPrefabName;
+        GameObject Pobj = (GameObject)Resources.Load(path), parentobj = GameObject.Find(ParentObjName), obj;
+        if (parentobj != null)
+            obj = Instantiate(Pobj, pos, Quaternion.Euler(eular.x, eular.y, eular.z), parentobj.transform);
+        else
+            obj = Instantiate(Pobj, pos, Quaternion.Euler(eular.x, eular.y, eular.z));
+        ReplicatiorBase replicatior = obj.GetComponent<ReplicatiorBase>();
+        if (replicatior == null)
+        {
+            Debug.Log("CreatingNetworkPrefab Request Refused! Attach Replicator To Prefab!");
+            Destroy(obj);
+            return null;
+        }
+        RegistNewReplicationObject(replicatior, NetworkPrefabName);
+        ClientDataList.ForEach((c) =>
+        {
+            SendTcpPacket(c, encoding.GetBytes("NewRepObj," + NetworkPrefabName + "," + Serializer.Vector3ToString(pos) + "," +
+                Serializer.Vector3ToString(eular) + "," + ParentObjName + "," + replicatior.Id + "," + replicatior.OwnerNetId));
+        });
+        return obj;
+    }
+
+    /// <summary>
     /// Replicate Object as RepPrefabObj
     /// </summary>
     /// <param name="replicatior"></param>
