@@ -8,6 +8,8 @@ public class NetworkLogicSample_Client : MonoBehaviour
     NetworkManager_Client client;
     [SerializeField]
     string PrefabName;
+    [SerializeField] GameObject A;
+
     [SerializeField]
     ReplicatiorBase AutonomousObj;
     // Start is called before the first frame update
@@ -22,4 +24,13 @@ public class NetworkLogicSample_Client : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.C))
             client.RequestCreatingNewAutonomousObject(AutonomousObj, PrefabName, AutonomousObj.transform.position, AutonomousObj.transform.eulerAngles, AutonomousObj.transform.parent!=null?AutonomousObj.transform.parent.name:"");
     }
+
+    void test22()
+    {
+
+        client.RequestCreatingNewAutonomousObject(AutonomousObj, A.name , AutonomousObj.transform.position, AutonomousObj.transform.eulerAngles, AutonomousObj.transform.parent != null ? AutonomousObj.transform.parent.name : "");
+    
+    }
+
+
 }
