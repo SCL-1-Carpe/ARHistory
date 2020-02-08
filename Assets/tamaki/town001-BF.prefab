@@ -9,6 +9,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1165421610779061473}
+  - component: {fileID: 7486716018552816331}
   m_Layer: 0
   m_Name: town001-BF
   m_TagString: Untagged
@@ -129,6 +130,23 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &7486716018552816331
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1328006556065553971}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a4b05f70100c048009a4c1a3d16977e1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  anims:
+  - {fileID: 2819393187577816581}
+  - {fileID: 7813432171070995665}
+  - {fileID: 1237202318515734992}
+  - {fileID: 1237202318906965269}
 --- !u!1 &5060543567457331944
 GameObject:
   m_ObjectHideFlags: 0
@@ -231,13 +249,8 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1237202318730168172, guid: 9a7a5f053500046f28d898b317029ca7,
         type: 3}
-      propertyPath: speed
-      value: 0.0001
-      objectReference: {fileID: 0}
-    - target: {fileID: 1237202318730168172, guid: 9a7a5f053500046f28d898b317029ca7,
-        type: 3}
       propertyPath: LaunchOnStart
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1237202318730168173, guid: 9a7a5f053500046f28d898b317029ca7,
         type: 3}
@@ -302,6 +315,18 @@ Transform:
     type: 3}
   m_PrefabInstance: {fileID: 244234873}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &1237202318906965269 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 1237202318730168172, guid: 9a7a5f053500046f28d898b317029ca7,
+    type: 3}
+  m_PrefabInstance: {fileID: 244234873}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 23795e626357a4806884b06d0ae9fe01, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &358092476
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -313,6 +338,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: Samurai_BattlePoint (2)
+      objectReference: {fileID: 0}
+    - target: {fileID: 1237202318730168172, guid: 9a7a5f053500046f28d898b317029ca7,
+        type: 3}
+      propertyPath: LaunchOnStart
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1237202318730168173, guid: 9a7a5f053500046f28d898b317029ca7,
         type: 3}
@@ -377,6 +407,18 @@ Transform:
     type: 3}
   m_PrefabInstance: {fileID: 358092476}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &1237202318515734992 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 1237202318730168172, guid: 9a7a5f053500046f28d898b317029ca7,
+    type: 3}
+  m_PrefabInstance: {fileID: 358092476}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 23795e626357a4806884b06d0ae9fe01, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &309590029762988478
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1701,6 +1743,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: Samurai_BattlePoint
       objectReference: {fileID: 0}
+    - target: {fileID: 1237202318730168172, guid: 9a7a5f053500046f28d898b317029ca7,
+        type: 3}
+      propertyPath: LaunchOnStart
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 1237202318730168173, guid: 9a7a5f053500046f28d898b317029ca7,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -1764,6 +1811,18 @@ Transform:
     type: 3}
   m_PrefabInstance: {fileID: 3894228149688918377}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &2819393187577816581 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 1237202318730168172, guid: 9a7a5f053500046f28d898b317029ca7,
+    type: 3}
+  m_PrefabInstance: {fileID: 3894228149688918377}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 23795e626357a4806884b06d0ae9fe01, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &4279080834493102609
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -7933,6 +7992,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: Samurai_BattlePoint (1)
       objectReference: {fileID: 0}
+    - target: {fileID: 1237202318730168172, guid: 9a7a5f053500046f28d898b317029ca7,
+        type: 3}
+      propertyPath: LaunchOnStart
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 1237202318730168173, guid: 9a7a5f053500046f28d898b317029ca7,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -7990,6 +8054,18 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 9a7a5f053500046f28d898b317029ca7, type: 3}
+--- !u!114 &7813432171070995665 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 1237202318730168172, guid: 9a7a5f053500046f28d898b317029ca7,
+    type: 3}
+  m_PrefabInstance: {fileID: 9026779210613013437}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 23795e626357a4806884b06d0ae9fe01, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!4 &7813432171070995664 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 1237202318730168173, guid: 9a7a5f053500046f28d898b317029ca7,
