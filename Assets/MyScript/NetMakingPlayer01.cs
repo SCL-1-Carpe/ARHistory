@@ -45,7 +45,8 @@ public class NetMakingPlayer01 : MonoBehaviour
 
     void NewObjCreated(ReplicatiorBase replicatior)
     {
-        replicatior.gameObject.GetComponent<Material>().color = Mats[replicatior.LocalHostNetId];
+        replicatior.gameObject.transform.FindChild("man-astronaut_Rig").FindChild("Geometry").FindChild("man-astronaut").gameObject.GetComponent<Material>().color = Mats[replicatior.LocalHostNetId];
+
     }
 
     private void OnDestroy()
