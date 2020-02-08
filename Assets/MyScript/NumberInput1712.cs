@@ -8,14 +8,24 @@ public class NumberInput1712 : MonoBehaviour
     string MoziGun;
     [SerializeField] GameObject TextObjectA;
     Text ShowingMozi;
+   [SerializeField] Text PreIpID;
+   [SerializeField] Text ChangeKyoka;
+
     int AllMoziNumber = 0;
     [System.NonSerialized] public string yoOutcome="";
     [SerializeField] bool InitializeMozi = true;
+
+    [SerializeField] NetworkManager_Client NetworkManager_Client1;
+    [SerializeField] bool ChangeIPBool = false;
+
+
 
     // Start is called before the first frame update
     void Start()
     {
         ShowingMozi = TextObjectA.GetComponent<Text>();
+
+        ChangeKyoka.text = "dame";
 
         if (InitializeMozi)
         {
@@ -26,7 +36,9 @@ public class NumberInput1712 : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        
+
+     PreIpID.text = NetworkManager_Client1.TargetIP;
+
     }
 
     public void Input0()
@@ -116,9 +128,35 @@ public class NumberInput1712 : MonoBehaviour
       
     }
 
+    public void ChangeT()
+    {
+        ChangeIPBool=true;
+
+        ChangeKyoka.text = "kyoka";
+    }
+
+    public void ChangeF()
+    {
+        ChangeIPBool = false;
+
+        ChangeKyoka.text = "dame";
+    }
+
     public void SendMozi()
     {
-       yoOutcome = MoziGun;
+        if (ChangeIPBool)
+        {
+            NetworkManager_Client1.TargetIP = MoziGun;
+
+            ClealInput();
+        }
+        else
+        {
+            Debug.Log("許可なしでIP変更しテイル");
+        }
+       
+
+
     }
 
 }

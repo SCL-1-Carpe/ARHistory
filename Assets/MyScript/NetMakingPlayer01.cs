@@ -14,7 +14,7 @@ public class NetMakingPlayer01 : MonoBehaviour
     //[SerializeField] GameObject MakingBasyo;
 
     
-    ReplicatiorBase AutonomousObj;
+    [SerializeField]ReplicatiorBase AutonomousObj;
 
     // Start is called before the first frame update
     void Start()
