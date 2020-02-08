@@ -167,9 +167,7 @@ public class NetworkManager_Client : MonoBehaviour
         if (obj == null)
             return;
         ReplicatiorBase replicatior = obj.GetComponent<ReplicatiorBase>();
-        replicatior.Id = ObjId;
-        replicatior.OwnerNetId = NetworkId;
-        replicatior.LocalHostNetId = NetworkId;
+        AddNewReplicatedObject(replicatior, ObjId, NetworkId);
         AutonomausObjects.Add(replicatior);
         if (OnNewAutonomousObjectAdmitted != null)
             OnNewAutonomousObjectAdmitted.Invoke(replicatior);

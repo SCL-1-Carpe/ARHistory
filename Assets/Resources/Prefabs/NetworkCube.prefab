@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 1216285793386953578}
   - component: {fileID: 506685207709208313}
   - component: {fileID: 1324401571106612411}
-  - component: {fileID: -8742590807184071000}
+  - component: {fileID: 8320267243529732122}
   m_Layer: 0
   m_Name: NetworkCube
   m_TagString: Untagged
@@ -93,7 +93,7 @@ BoxCollider:
   serializedVersion: 2
   m_Size: {x: 1, y: 1, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
---- !u!114 &-8742590807184071000
+--- !u!114 &8320267243529732122
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -102,9 +102,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 2767479636911961877}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7fb5d81ce4fcb44f6a6901a66edbe500, type: 3}
+  m_Script: {fileID: 11500000, guid: d2550d9d6c91743e5982861df1967c41, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   OwnerNetId: 0
+  LocalHostNetId: 0
   Id: -1
   RepPrefabName: 
+  CoordinateBaseObject: {fileID: 0}
