@@ -7,6 +7,7 @@ public class ObjectBasedTransformReplicator : ReplicatiorBase
     public GameObject CoordinateBaseObject;
     [SerializeField] GameObject Cobase;
 
+    Vector3 Prepos;
 
     private void Start()
     {
@@ -16,11 +17,6 @@ public class ObjectBasedTransformReplicator : ReplicatiorBase
         if (CoordinateBaseObject == null)
         {
             CoordinateBaseObject = GameObject.FindGameObjectWithTag("COBaseTag");
-        }
-
-
-        if (CoordinateBaseObject==null)
-        {
             CoordinateBaseObject = Cobase;
 
         }
@@ -33,6 +29,7 @@ public class ObjectBasedTransformReplicator : ReplicatiorBase
         float length = (CoordinateBaseObject.transform.position - transform.position).magnitude;
         Vector3 vec = (transform.position - CoordinateBaseObject.transform.position).normalized;
         float yrot = Quaternion.LookRotation(transform.position, CoordinateBaseObject.transform.position).eulerAngles.y;
+        Prepos = transform.position;
         return NetworkManager_Server.encoding.GetBytes(Serializer.Vector3ToString(vec, 3) + "," + length + "," + yrot);
     }
 
@@ -41,6 +38,7 @@ public class ObjectBasedTransformReplicator : ReplicatiorBase
         float length = (CoordinateBaseObject.transform.position - transform.position).magnitude;
         Vector3 vec = (transform.position - CoordinateBaseObject.transform.position).normalized;
         float yrot = Quaternion.LookRotation(transform.position, CoordinateBaseObject.transform.position).eulerAngles.y;
+        Prepos = transform.position;
         return NetworkManager_Server.encoding.GetBytes(Serializer.Vector3ToString(vec, 3) + "," + length + "," + yrot);
     }
 
@@ -54,5 +52,15 @@ public class ObjectBasedTransformReplicator : ReplicatiorBase
     public override void ReceiveAutonomousData(byte[] autodata)
     {
         ReceiveReplicationData(autodata);
+    }
+
+    public override bool DoesServerNeedReplication()
+    {
+        return Prepos != transform.position;
+    }
+
+    public override bool DoesClientNeedReplication(ClientDataContainer client)
+    {
+        return Prepos != transform.position;
     }
 }

@@ -14,11 +14,10 @@ public struct ClientDataContainer
     public byte NetworkId;
 }
 
-public class NetworkManager_Server : MonoBehaviour
+public class NetworkManager_Server : NetworkManagerBase
 {
     public static NetworkManager_Server server;
 
-    public IPAddress OwnIP;
     public string DOwnIP;
     TcpListener listener;
     UdpClient UdpSocket;
@@ -29,10 +28,6 @@ public class NetworkManager_Server : MonoBehaviour
     int TcpPortNum = 7890, UdpPortNum = 7891;
     int buffersize = 512;
     byte[] buffer;
-    /// <summary>
-    /// Encoding class of Server and Replicators
-    /// </summary>
-    public static Encoding encoding = Encoding.ASCII;
     /// <summary>
     /// Dictionary of Replication targets Key=ReplicatorBase.Id
     /// </summary>
@@ -93,9 +88,11 @@ public class NetworkManager_Server : MonoBehaviour
         catch
         {
             Debug.Log("Couldnt Launch Server");
+            return;
         }
         UdpSocket = new UdpClient(UdpPortNum);
         server = this;
+        LocalInst = this;
     }
 
     void AcceptedClientCallback(System.IAsyncResult ar)

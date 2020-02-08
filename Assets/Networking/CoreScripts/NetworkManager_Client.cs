@@ -7,9 +7,8 @@ using System.Text;
 using System.Linq;
 
 
-public class NetworkManager_Client : MonoBehaviour
+public class NetworkManager_Client : NetworkManagerBase
 {
-    public IPAddress OwnIP;
     public string DOwnIP, TargetIP;
     public string m_TargetIP
     {
@@ -21,7 +20,6 @@ public class NetworkManager_Client : MonoBehaviour
     TcpClient OwnTcpSocket;
     [SerializeField]
     bool LaunchOnStart;
-    public byte NetworkId;
     [SerializeField]
     int TcpPortNum = 7890, UdpPortNum = 7891;
     /// <summary>
@@ -33,7 +31,6 @@ public class NetworkManager_Client : MonoBehaviour
     /// </summary>
     Dictionary<int, ReplicatiorBase> RepObjPairs;
     int buffersize = 512;
-    Encoding encoding = Encoding.ASCII;
     byte[] databuffer;
 
     public delegate void ConnectionNotification(NetworkManager_Client client);
@@ -70,7 +67,9 @@ public class NetworkManager_Client : MonoBehaviour
         catch
         {
             Debug.Log("Couldnt find Server");
+            return;
         }
+        LocalInst = this;
     }
 
     void ConnectedToServerCallback(System.IAsyncResult ar)
@@ -174,27 +173,10 @@ public class NetworkManager_Client : MonoBehaviour
             return;
 
         ReplicatiorBase replicatior = obj.GetComponent<ReplicatiorBase>();
-
-        Debug.Log("FF");
-        Debug.Log(replicatior);
-
         AddNewReplicatedObject(replicatior, ObjId, NetworkId);
-
-        Debug.Log("A");
-
         AutonomausObjects.Add(replicatior);
-
-        
-
-        Debug.Log(OnNewAutonomousObjectAdmitted);
-
         if (OnNewAutonomousObjectAdmitted != null)
-        {
             OnNewAutonomousObjectAdmitted.Invoke(replicatior);
-           
-
-        }
-
 
         Debug.Log("New Autonomous Object : " + ObjName);
     }
