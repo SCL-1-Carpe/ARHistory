@@ -54,6 +54,11 @@ namespace MagicLeap
         private PrivilegeRequester _privilegeRequester = null;
 
         private bool _hasStarted = false;
+
+        [SerializeField] COBaseBe cOBaseBe1;
+
+        [System.NonSerialized]public bool MyCOBaseBool = false;
+
         #endregion
 
         #region Unity Methods
@@ -127,10 +132,35 @@ namespace MagicLeap
         /// </summary>
         void UpdateImageTrackerBehaviours(bool enabled)
         {
-            foreach (GameObject obj in TrackerBehaviours)
+            if (enabled==false)
             {
-                obj.SetActive(enabled);
+                if (cOBaseBe1.HinannKanryou)
+                {
+                    MyCOBaseBool = enabled;
+                    foreach (GameObject obj in TrackerBehaviours)
+                    {
+                        obj.SetActive(enabled);
+                    }
+
+                }
+                else
+                {
+                    Debug.Log("問題ここ2167");
+
+                }
             }
+            else
+            {
+                MyCOBaseBool = enabled;
+
+                foreach (GameObject obj in TrackerBehaviours)
+                {
+                    obj.SetActive(enabled);
+                }
+            }
+           
+
+
         }
 
         /// <summary>
