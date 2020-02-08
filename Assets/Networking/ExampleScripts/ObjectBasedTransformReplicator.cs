@@ -48,7 +48,7 @@ public class ObjectBasedTransformReplicator : ReplicatiorBase
     {
         string[] s = NetworkManager_Server.encoding.GetString(repdata).Split(',');
         transform.position = CoordinateBaseObject.transform.position + (Serializer.StringToVector3(s[0], s[1], s[2]) * float.Parse(s[3]));
-        transform.eulerAngles =new Vector3(0,float.Parse(s[5]),0);
+        transform.eulerAngles =new Vector3(0,float.Parse(s[4]),0);
     }
 
     public override void ReceiveAutonomousData(byte[] autodata)

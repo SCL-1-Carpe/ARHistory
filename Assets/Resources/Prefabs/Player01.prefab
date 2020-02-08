@@ -31,7 +31,7 @@ Transform:
   m_GameObject: {fileID: 873730340404086591}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 2.8689456, y: 2.8689456, z: 2.8689456}
+  m_LocalScale: {x: 0.05, y: 0.05, z: 0.05}
   m_Children:
   - {fileID: 877955126903796226}
   m_Father: {fileID: 0}
@@ -147,6 +147,7 @@ MonoBehaviour:
   Id: -1
   RepPrefabName: 
   CoordinateBaseObject: {fileID: 0}
+  Cobase: {fileID: 0}
 --- !u!1001 &873730341830899396
 PrefabInstance:
   m_ObjectHideFlags: 0

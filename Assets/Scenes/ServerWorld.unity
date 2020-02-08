@@ -182,6 +182,31 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 1165421610779061473, guid: 21317cec0aa5c4dfa8e9c72653a0e4f2,
+        type: 3}
+      propertyPath: m_LocalScale.x
+      value: 0.01
+      objectReference: {fileID: 0}
+    - target: {fileID: 1165421610779061473, guid: 21317cec0aa5c4dfa8e9c72653a0e4f2,
+        type: 3}
+      propertyPath: m_LocalScale.y
+      value: 0.01
+      objectReference: {fileID: 0}
+    - target: {fileID: 1165421610779061473, guid: 21317cec0aa5c4dfa8e9c72653a0e4f2,
+        type: 3}
+      propertyPath: m_LocalScale.z
+      value: 0.01
+      objectReference: {fileID: 0}
+    - target: {fileID: 1237202318515734992, guid: 21317cec0aa5c4dfa8e9c72653a0e4f2,
+        type: 3}
+      propertyPath: LaunchOnStart
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1237202318906965269, guid: 21317cec0aa5c4dfa8e9c72653a0e4f2,
+        type: 3}
+      propertyPath: LaunchOnStart
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 1328006556065553971, guid: 21317cec0aa5c4dfa8e9c72653a0e4f2,
         type: 3}
       propertyPath: m_Name
@@ -191,6 +216,16 @@ PrefabInstance:
         type: 3}
       propertyPath: m_TagString
       value: COBaseTag
+      objectReference: {fileID: 0}
+    - target: {fileID: 2819393187577816581, guid: 21317cec0aa5c4dfa8e9c72653a0e4f2,
+        type: 3}
+      propertyPath: LaunchOnStart
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7813432171070995665, guid: 21317cec0aa5c4dfa8e9c72653a0e4f2,
+        type: 3}
+      propertyPath: LaunchOnStart
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 21317cec0aa5c4dfa8e9c72653a0e4f2, type: 3}
