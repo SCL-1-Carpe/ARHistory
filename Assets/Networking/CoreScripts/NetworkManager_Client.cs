@@ -151,6 +151,11 @@ public class NetworkManager_Client : MonoBehaviour
         }
     }
 
+    public void RequestRPCMultiCast(string ObjectName,string MethodName,string arg)
+    {
+        SendTcpPacket(encoding.GetBytes("RPCMC," + ObjectName + "," + MethodName + "," + arg));
+    }
+
     void AddNewReplicatedObject(ReplicatiorBase replicatior, int Id, byte OwnerId)
     {
         replicatior.Id = Id;
