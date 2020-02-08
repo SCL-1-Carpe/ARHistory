@@ -85,7 +85,7 @@ public class NetworkManager_Client : MonoBehaviour
         //OwnUdpClient.Connect(TargetIP, UdpPortNum);
     }
 
-    void SendTcpPacket(byte[] data)
+    public void SendTcpPacket(byte[] data)
     {
         OwnTcpSocket.Client.Send(data);
     }
