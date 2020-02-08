@@ -12,13 +12,13 @@ namespace MagicLeap {
         [SerializeField] float MukiKando = 0.01f;
         [SerializeField] GameObject MainCamera;
 
-
         private Vector3 Player_pos; //プレイヤーのポジション
 
         GameObject Player;
         // Start is called before the first frame update
         void Start()
         {
+           
             if (ThisIsPlayer01)
             {
                 Player = gameObject;
@@ -37,6 +37,8 @@ namespace MagicLeap {
         // Update is called once per frame
         void Update()
         {
+
+
             DoingWalking();
 
             Vector3 diff = transform.position - Player_pos;
@@ -54,6 +56,22 @@ namespace MagicLeap {
 
         void DoingWalking()
         {
+            if (MainCamera==null)
+            {
+                return;
+
+            }
+
+            if (myInputCo4135==null)
+            {
+
+                return;
+
+
+            }
+
+
+
             Vector3 AA = MainCamera.transform.rotation * myInputCo4135.updatePosition * Time.deltaTime * WalkingSpeed;
             AA.y = 0;
             Player.transform.position += AA;
