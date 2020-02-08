@@ -11,18 +11,16 @@ public class SamuraiAnimationTrigger : MonoBehaviour
     Vector3 offset;
     [SerializeField]
     bool LaunchOnStart;
-    [SerializeField]
-    Color red, blue;
+
+    float speed=0.003f;
     // Start is called before the first frame update
     void Start()
     {
         red_Inst = Instantiate(samurai_Red,transform);
         red_Inst.transform.position = transform.position + offset;
         red_Inst.transform.localEulerAngles = new Vector3(0, 180, 0);
-        red_Inst.GetComponentInChildren<MeshRenderer>().material.color = red;
         blue_Inst = Instantiate(samurai_Blue,transform);
         blue_Inst.transform.position = transform.position - offset;
-        blue_Inst.GetComponentInChildren<MeshRenderer>().material.color = blue;
         red_Inst.SetActive(false);
         blue_Inst.SetActive(false);
         if(LaunchOnStart)
@@ -34,5 +32,10 @@ public class SamuraiAnimationTrigger : MonoBehaviour
     {
         red_Inst.SetActive(true);
         blue_Inst.SetActive(true);
+    }
+
+    private void Update()
+    {
+        transform.position += transform.right * speed;
     }
 }
