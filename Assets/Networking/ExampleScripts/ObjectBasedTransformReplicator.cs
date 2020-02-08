@@ -32,20 +32,23 @@ public class ObjectBasedTransformReplicator : ReplicatiorBase
     {
         float length = (CoordinateBaseObject.transform.position - transform.position).magnitude;
         Vector3 vec = (transform.position - CoordinateBaseObject.transform.position).normalized;
-        Vector3 eular = transform.eulerAngles - CoordinateBaseObject.transform.eulerAngles;
-        return NetworkManager_Server.encoding.GetBytes(Serializer.Vector3ToString(vec,3) + "," + length + "," + Serializer.Vector3ToString(eular,0));
+        float yrot = Quaternion.LookRotation(transform.position, CoordinateBaseObject.transform.position).eulerAngles.y;
+        return NetworkManager_Server.encoding.GetBytes(Serializer.Vector3ToString(vec, 3) + "," + length + "," + yrot);
     }
 
     public override byte[] GetAutonomousData()
     {
-        return GetReplicationData();
+        float length = (CoordinateBaseObject.transform.position - transform.position).magnitude;
+        Vector3 vec = (transform.position - CoordinateBaseObject.transform.position).normalized;
+        float yrot = Quaternion.LookRotation(transform.position, CoordinateBaseObject.transform.position).eulerAngles.y;
+        return NetworkManager_Server.encoding.GetBytes(Serializer.Vector3ToString(vec, 3) + "," + length + "," + yrot);
     }
 
     public override void ReceiveReplicationData(byte[] repdata)
     {
         string[] s = NetworkManager_Server.encoding.GetString(repdata).Split(',');
         transform.position = CoordinateBaseObject.transform.position + (Serializer.StringToVector3(s[0], s[1], s[2]) * float.Parse(s[3]));
-        transform.eulerAngles = CoordinateBaseObject.transform.eulerAngles + Serializer.StringToVector3(s[4], s[5], s[6]);
+        transform.eulerAngles =new Vector3(0,float.Parse(s[5]),0);
     }
 
     public override void ReceiveAutonomousData(byte[] autodata)
