@@ -40,12 +40,12 @@ public class NetMakingPlayer01 : MonoBehaviour
 
         client.RequestCreatingNewAutonomousObject(AutonomousObj, A.name, AutonomousObj.transform.position, AutonomousObj.transform.eulerAngles, AutonomousObj.transform.parent != null ? AutonomousObj.transform.parent.name : "");
 
-        UtyuHikousi.GetComponent<Material>().color = Mats[ReRe.LocalHostNetId];
+        UtyuHikousi.GetComponent<Renderer>().material.color = Mats[ReRe.LocalHostNetId];
     }
 
     void NewObjCreated(ReplicatiorBase replicatior)
     {
-        replicatior.gameObject.transform.FindChild("man-astronaut_Rig").FindChild("Geometry").FindChild("man-astronaut").gameObject.GetComponent<Material>().color = Mats[replicatior.LocalHostNetId];
+        replicatior.gameObject.transform.FindChild("man-astronaut_Rig").FindChild("Geometry").FindChild("man-astronaut").gameObject.GetComponent<Renderer>().material.color = Mats[replicatior.LocalHostNetId];
 
     }
 

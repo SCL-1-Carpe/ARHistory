@@ -169,13 +169,33 @@ public class NetworkManager_Client : MonoBehaviour
     void AddAdmittedAutonomousObject(string ObjName, int ObjId)
     {
         GameObject obj = GameObject.Find(ObjName);
+       
         if (obj == null)
             return;
+
         ReplicatiorBase replicatior = obj.GetComponent<ReplicatiorBase>();
+
+        Debug.Log("FF");
+        Debug.Log(replicatior);
+
         AddNewReplicatedObject(replicatior, ObjId, NetworkId);
+
+        Debug.Log("A");
+
         AutonomausObjects.Add(replicatior);
+
+        
+
+        Debug.Log(OnNewAutonomousObjectAdmitted);
+
         if (OnNewAutonomousObjectAdmitted != null)
+        {
             OnNewAutonomousObjectAdmitted.Invoke(replicatior);
+           
+
+        }
+
+
         Debug.Log("New Autonomous Object : " + ObjName);
     }
 
