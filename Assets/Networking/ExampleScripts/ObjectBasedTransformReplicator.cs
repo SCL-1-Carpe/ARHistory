@@ -5,10 +5,27 @@ using UnityEngine;
 public class ObjectBasedTransformReplicator : ReplicatiorBase
 {
     public GameObject CoordinateBaseObject;
+    [SerializeField] GameObject Cobase;
+
 
     private void Start()
     {
         CoordinateBaseObject = GameObject.Find("COBase");
+
+
+        if (CoordinateBaseObject == null)
+        {
+            CoordinateBaseObject = GameObject.FindGameObjectWithTag("COBaseTag");
+        }
+
+
+        if (CoordinateBaseObject==null)
+        {
+            CoordinateBaseObject = Cobase;
+
+        }
+
+
     }
 
     public override byte[] GetReplicationData()
