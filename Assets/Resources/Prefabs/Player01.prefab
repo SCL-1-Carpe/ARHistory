@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 873730340404086584}
   - component: {fileID: 873730340404086532}
   - component: {fileID: 873730340404086533}
-  - component: {fileID: 4373534275308515152}
+  - component: {fileID: -6065102093604567440}
   m_Layer: 0
   m_Name: Player01
   m_TagString: Untagged
@@ -130,7 +130,7 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 84
   m_CollisionDetection: 0
---- !u!114 &4373534275308515152
+--- !u!114 &-6065102093604567440
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -139,12 +139,14 @@ MonoBehaviour:
   m_GameObject: {fileID: 873730340404086591}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7fb5d81ce4fcb44f6a6901a66edbe500, type: 3}
+  m_Script: {fileID: 11500000, guid: d2550d9d6c91743e5982861df1967c41, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   OwnerNetId: 0
+  LocalHostNetId: 0
   Id: -1
   RepPrefabName: 
+  CoordinateBaseObject: {fileID: 0}
 --- !u!1001 &873730341830899396
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -212,17 +214,12 @@ PrefabInstance:
       propertyPath: m_LocalScale.z
       value: 0.51
       objectReference: {fileID: 0}
-    - target: {fileID: 143624632674978902, guid: d218b8648a5a34c24b9a40fdff254e26,
-        type: 3}
-      propertyPath: m_Enabled
-      value: 0
-      objectReference: {fileID: 0}
     - target: {fileID: 95907818995899360, guid: d218b8648a5a34c24b9a40fdff254e26,
         type: 3}
       propertyPath: m_Enabled
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 195584334942645612, guid: d218b8648a5a34c24b9a40fdff254e26,
+    - target: {fileID: 114540283580634786, guid: d218b8648a5a34c24b9a40fdff254e26,
         type: 3}
       propertyPath: m_Enabled
       value: 0
@@ -232,7 +229,12 @@ PrefabInstance:
       propertyPath: m_Enabled
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 114540283580634786, guid: d218b8648a5a34c24b9a40fdff254e26,
+    - target: {fileID: 143624632674978902, guid: d218b8648a5a34c24b9a40fdff254e26,
+        type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 195584334942645612, guid: d218b8648a5a34c24b9a40fdff254e26,
         type: 3}
       propertyPath: m_Enabled
       value: 0
