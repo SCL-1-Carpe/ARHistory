@@ -6,6 +6,8 @@ public class NetMakingPlayer01 : MonoBehaviour
 {
     [SerializeField] NetworkManager_Client client;
     [SerializeField] GameObject A;
+    [SerializeField] GameObject UtyuHikousi;
+
     [SerializeField] GameObject UI;
     [SerializeField] Color[]Mats;
     [SerializeField] ReplicatiorBase ReRe;
@@ -38,7 +40,7 @@ public class NetMakingPlayer01 : MonoBehaviour
 
         client.RequestCreatingNewAutonomousObject(AutonomousObj, A.name, AutonomousObj.transform.position, AutonomousObj.transform.eulerAngles, AutonomousObj.transform.parent != null ? AutonomousObj.transform.parent.name : "");
 
-        A.GetComponent<Material>().color = Mats[ReRe.LocalHostNetId];
+        UtyuHikousi.GetComponent<Material>().color = Mats[ReRe.LocalHostNetId];
     }
 
     void NewObjCreated(ReplicatiorBase replicatior)
