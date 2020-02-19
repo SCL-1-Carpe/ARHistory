@@ -97,7 +97,7 @@ public static class Serializer
 {
     public static byte[] Vector3ToBytes(Vector3 vec)
     {
-        return NetworkManager_Server.encoding.GetBytes(Vector3ToString(vec));
+        return NetworkManagerBase.encoding.GetBytes(Vector3ToString(vec));
     }
 
     public static string Vector3ToString(Vector3 vec, int f = 1)
