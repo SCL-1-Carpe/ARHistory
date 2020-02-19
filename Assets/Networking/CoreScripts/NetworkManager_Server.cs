@@ -73,6 +73,12 @@ public class NetworkManager_Server : NetworkManagerBase
             LaunchNetworkServer();
         }
     }
+
+    public override void Launch()
+    {
+        LaunchNetworkServer();
+    }
+
     /// <summary>
     /// Launch Server System. Start Listen on TcpPortNum.
     /// </summary>
