@@ -7053,7 +7053,7 @@ PrefabInstance:
         type: 3}
       propertyPath: myInputCo4135
       value: 
-      objectReference: {fileID: 0}
+      objectReference: {fileID: 1380711552}
     - target: {fileID: 873730340404086585, guid: e3928b0ab92db4d4982f316bc0bf9b89,
         type: 3}
       propertyPath: m_Enabled
