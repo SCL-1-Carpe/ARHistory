@@ -213,6 +213,8 @@ public class NetworkManager_Client : NetworkManagerBase
 
     GameObject CreateReplicatedPrefab(string PrefabName, Vector3 pos, Vector3 eular, string ParentObj, int ObjId, byte OwnerId)
     {
+        if (RepObjPairs.TryGetValue(ObjId, out ReplicatiorBase r))
+            return null;
         string path = "Prefabs/" + PrefabName;
         GameObject Pobj = (GameObject)Resources.Load(path), parentobj = GameObject.Find(ParentObj), obj;
         if (parentobj != null)
