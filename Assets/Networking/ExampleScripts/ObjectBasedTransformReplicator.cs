@@ -5,7 +5,6 @@ using UnityEngine;
 public class ObjectBasedTransformReplicator : ReplicatiorBase
 {
     public GameObject CoordinateBaseObject;
-    [SerializeField] GameObject Cobase;
 
     Vector3 Prepos;
 
@@ -17,7 +16,6 @@ public class ObjectBasedTransformReplicator : ReplicatiorBase
         if (CoordinateBaseObject == null)
         {
             CoordinateBaseObject = GameObject.FindGameObjectWithTag("COBaseTag");
-            CoordinateBaseObject = Cobase;
 
         }
 
@@ -37,13 +35,13 @@ public class ObjectBasedTransformReplicator : ReplicatiorBase
 
     public override byte[] GetAutonomousData()
     {
-        if (CoordinateBaseObject == null)
-            return null;
         return GetReplicationData();
     }
 
     public override void ReceiveReplicationData(byte[] repdata)
     {
+        if (CoordinateBaseObject == null)
+            return;
         string[] s = NetworkManagerBase.encoding.GetString(repdata).Split(',');
         Vector3 vec = Serializer.StringToVector3(s[0], s[1], s[2]);
         transform.position = CoordinateBaseObject.transform.position + CoordinateBaseObject.transform.right * vec.x + CoordinateBaseObject.transform.up * vec.y + CoordinateBaseObject.transform.forward * vec.z;

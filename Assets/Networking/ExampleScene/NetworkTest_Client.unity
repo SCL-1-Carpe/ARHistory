@@ -329,10 +329,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5eff2bbbc4c42473da34e92470889bdd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  DOwnIP: 
-  TargetIP: 192.168.2.125
-  LaunchOnStart: 1
   NetworkId: 0
+  DOwnIP: 
+  TargetIP: 192.168.100.101
+  LaunchOnStart: 1
   TcpPortNum: 7990
   UdpPortNum: 7995
 --- !u!1 &1936356281

@@ -42,6 +42,7 @@ public class NetworkManager_Client : NetworkManagerBase
     public ReplicatedObjectNotification OnNewRepObjectAdded;
     public ReplicatedObjectNotification OnNewAutonomousObjectAdmitted;
     public NetworkDataHandler OnTcpPacketReceived;
+    public NetworkDataHandler OnTcpMessageReceived;
     public NetworkDataHandler OnUdpPacketReceived;
 
     // Start is called before the first frame update
@@ -207,6 +208,9 @@ public class NetworkManager_Client : NetworkManagerBase
                 break;
             case "Assign":
                 NetworkInitialize(byte.Parse(vs[1]));
+                break;
+            default:
+                OnTcpMessageReceived?.Invoke(encoding.GetBytes(mes));
                 break;
         }
     }
