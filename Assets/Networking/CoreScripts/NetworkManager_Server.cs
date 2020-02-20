@@ -48,6 +48,7 @@ public class NetworkManager_Server : NetworkManagerBase
     public ClientNotification OnClientDisconnected;
     public NetworkDataHandler OnTcpPacketReceived;
     public NetworkDataHandler OnUdpPacketReceived;
+    public NetworkDataHandler OnTcpMessageReceived;
 
     // Start is called before the first frame update
     void Start()
@@ -227,6 +228,9 @@ public class NetworkManager_Server : NetworkManagerBase
                 break;
             case "RPCMC": //MultiCast RPC
                 MultiCastRPC(vs[1], vs[2], vs[3]);
+                break;
+            default:
+                OnTcpMessageReceived?.Invoke(encoding.GetBytes(request), client);
                 break;
         }
     }
