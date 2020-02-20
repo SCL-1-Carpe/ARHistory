@@ -55,11 +55,11 @@ public class ObjectBasedTransformReplicator : ReplicatiorBase
 
     public override bool DoesServerNeedReplication()
     {
-        return Prepos != transform.position;
+        return Prepos != transform.position&&IsAutonomousObject();
     }
 
     public override bool DoesClientNeedReplication(ClientDataContainer client)
     {
-        return Prepos != transform.position;
+        return Prepos != transform.position&&!IsAutonomousObject();
     }
 }
