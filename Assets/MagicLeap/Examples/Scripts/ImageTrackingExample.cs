@@ -40,7 +40,7 @@ namespace MagicLeap
         private ViewMode _viewMode = ViewMode.All;
 
         [SerializeField, Tooltip("Image Tracking Visualizers to control")]
-        private ImageTrackingVisualizer [] _visualizers = null;
+        private ImageTrackingVisualizer[] _visualizers = null;
 
         [SerializeField, Tooltip("The View Mode text.")]
         private Text _viewModeLabel = null;
@@ -57,7 +57,7 @@ namespace MagicLeap
 
         [SerializeField] COBaseBe cOBaseBe1;
 
-        [System.NonSerialized]public bool MyCOBaseBool = false;
+        [System.NonSerialized] public bool MyCOBaseBool = false;
 
         #endregion
 
@@ -132,7 +132,7 @@ namespace MagicLeap
         /// </summary>
         void UpdateImageTrackerBehaviours(bool enabled)
         {
-            if (enabled==false)
+            if (enabled == false)
             {
                 if (cOBaseBe1.HinannKanryou)
                 {
@@ -158,7 +158,7 @@ namespace MagicLeap
                     obj.SetActive(enabled);
                 }
             }
-           
+
 
 
         }
