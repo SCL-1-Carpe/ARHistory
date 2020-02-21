@@ -6,38 +6,36 @@ using UnityEngine.UI;
 public class NumberInput1712 : MonoBehaviour
 {
     string MoziGun;
-    [SerializeField] GameObject TextObjectA;
+    [SerializeField] GameObject MainTextOBject;
     Text ShowingMozi;
-   [SerializeField] Text PreIpID;
-   [SerializeField] Text ChangeKyoka;
+    [SerializeField] Text PreIpID;
+    [SerializeField] Text ChangeKyoka;
 
     int AllMoziNumber = 0;
-    [System.NonSerialized] public string yoOutcome="";
+   // [System.NonSerialized] public string yoOutcome = "";
     [SerializeField] bool InitializeMozi = true;
 
     [SerializeField] NetworkManager_Client NetworkManager_Client1;
-    [SerializeField] bool ChangeIPBool = false;
-
-
+    
 
     // Start is called before the first frame update
     void Start()
     {
-        ShowingMozi = TextObjectA.GetComponent<Text>();
+        ShowingMozi = MainTextOBject.GetComponent<Text>();
 
-        ChangeKyoka.text = "dame";
+        ChangeKyoka.text = "NoConnect";
 
         if (InitializeMozi)
         {
             ClealInput();
         }
+
+        PreIpID.text = NetworkManager_Client1.TargetIP;
     }
 
     // Update is called once per frame
     void Update()
     {
-
-     PreIpID.text = NetworkManager_Client1.TargetIP;
 
     }
 
@@ -105,17 +103,19 @@ public class NumberInput1712 : MonoBehaviour
 
     public void ClealInput()
     {
-        MoziGun="";
+        MoziGun = "";
         AllMoziNumber = 0;
         ShowingMozi.text = MoziGun;
 
     }
 
+
+
     public void DeleteLastMozi()
     {
         if (AllMoziNumber > 0)
         {
-            MoziGun = MoziGun.Substring(0, AllMoziNumber-1);
+            MoziGun = MoziGun.Substring(0, AllMoziNumber - 1);
 
             AllMoziNumber -= 1;
 
@@ -125,9 +125,10 @@ public class NumberInput1712 : MonoBehaviour
         {
             Debug.Log("文字なし");
         }
-      
+
     }
 
+    /*
     public void ChangeT()
     {
         ChangeIPBool=true;
@@ -140,23 +141,22 @@ public class NumberInput1712 : MonoBehaviour
         ChangeIPBool = false;
 
         ChangeKyoka.text = "dame";
-    }
+    }*/
 
-    public void SendMozi()
+    public void IPChanged()
     {
-        if (ChangeIPBool)
-        {
-            NetworkManager_Client1.TargetIP = MoziGun;
+        //ここにPreIpIDの値をtragetIPに参照させる。
+        PreIpID.text = MoziGun;
 
-            ClealInput();
-        }
-        else
-        {
-            Debug.Log("許可なしでIP変更しテイル");
-        }
-       
-
+        NetworkManager_Client1.TargetIP = PreIpID.text;
 
     }
+
+    public void ChangeToShowingCOnnect()
+    {
+        ChangeKyoka.text = "Connect";
+
+    }
+
 
 }
