@@ -21,7 +21,7 @@ public class NetworkManager_Server : NetworkManagerBase
     public string DOwnIP;
     TcpListener listener;
     UdpClient UdpSocket;
-    public List<ClientDataContainer> ClientDataList = new List<ClientDataContainer>();
+    public List<ClientDataContainer> ClientDataList;
     [SerializeField]
     bool LaunchOnStart;
     [SerializeField]
@@ -31,17 +31,20 @@ public class NetworkManager_Server : NetworkManagerBase
     /// <summary>
     /// Dictionary of Replication targets Key=ReplicatorBase.Id
     /// </summary>
-    public Dictionary<int, ReplicatiorBase> RepObjPairs = new Dictionary<int, ReplicatiorBase>();
+    public Dictionary<int, ReplicatiorBase> RepObjPairs;
     /// <summary>
     /// List of Replication targets
     /// </summary>
-    public List<ReplicatiorBase> RepObjects = new List<ReplicatiorBase>();
-    int ObjIdBuffer = 0;
-    byte NetIdBuffer = 1;
+    public List<ReplicatiorBase> RepObjects;
+    int ObjIdBuffer;
+    byte NetIdBuffer;
+    [SerializeField]
+    float ServerUpdateInterval = 0.025f;
+    [SerializeField]
+    float ServerAcceptInterval = 2f;
 
     public delegate void ClientNotification(ClientDataContainer clientData);
     public delegate void NetworkDataHandler(byte[] data, ClientDataContainer clientData);
-    public delegate void ReplicatedObjectNotification(ReplicatiorBase replicatior);
     public ReplicatedObjectNotification OnNewRepObjectAdded;
     public ReplicatedObjectNotification OnNewAutonomousObjectAdded;
     public ClientNotification OnNewClientConnected;
@@ -80,17 +83,29 @@ public class NetworkManager_Server : NetworkManagerBase
         LaunchNetworkServer();
     }
 
+    public override void ShutDown()
+    {
+        ShutDownServer();
+    }
+
     /// <summary>
     /// Launch Server System. Start Listen on TcpPortNum.
     /// </summary>
     public void LaunchNetworkServer()
     {
         buffer = new byte[buffersize];
+        RepObjPairs = new Dictionary<int, ReplicatiorBase>();
+        RepObjects = new List<ReplicatiorBase>();
+        ClientDataList = new List<ClientDataContainer>();
+        ObjIdBuffer = 0;
+        NetIdBuffer = 1;
         try
         {
             listener = new TcpListener(IPAddress.Any, TcpPortNum);
             listener.Start();
-            System.IAsyncResult result = listener.BeginAcceptTcpClient(AcceptedClientCallback, listener);
+            InvokeRepeating("CheckForNewClient", ServerAcceptInterval, ServerAcceptInterval);
+            InvokeRepeating("ServerTick", ServerUpdateInterval, ServerUpdateInterval);
+            Debug.Log("Launch Server Successfully!");
         }
         catch
         {
@@ -102,6 +117,38 @@ public class NetworkManager_Server : NetworkManagerBase
         LocalInst = this;
     }
 
+    public void ShutDownServer()
+    {
+        buffer = null;
+        listener.Stop();
+        listener = null;
+        UdpSocket.Close();
+        UdpSocket = null;
+        server = null;
+        LocalInst = null;
+        CancelInvoke();
+        ClientDataList.ForEach((c) =>
+        {
+            SendTcpPacket(c, encoding.GetBytes("End"));
+            c.TcpSocket.Close();
+        });
+        ClientDataList.Clear();
+        RepObjPairs.Clear();
+        RepObjPairs = null;
+        RepObjects.Clear();
+        RepObjects = null;
+        Debug.Log("ShutDown Server");
+    }
+
+    void CheckForNewClient()
+    {
+        if (listener.Pending())
+        {
+            Debug.Log("Accepting New Client...");
+            listener.BeginAcceptTcpClient(AcceptedClientCallback, listener);
+        }
+    }
+
     void AcceptedClientCallback(System.IAsyncResult ar)
     {
         Debug.Log("Server: Client Connected");
@@ -111,7 +158,6 @@ public class NetworkManager_Server : NetworkManagerBase
         ClientDataList.Add(c);
         if (OnNewClientConnected != null)
             OnNewClientConnected.Invoke(c);
-        listener.BeginAcceptTcpClient(AcceptedClientCallback, listener);
     }
 
     void SendInitialMessage(ClientDataContainer client)
@@ -125,7 +171,7 @@ public class NetworkManager_Server : NetworkManagerBase
         SendTcpPacket(client, encoding.GetBytes(InitRepData));
     }
 
-    void SendTcpPacket(ClientDataContainer client, byte[] data)
+    public void SendTcpPacket(ClientDataContainer client, byte[] data)
     {
         try
         {
@@ -147,6 +193,10 @@ public class NetworkManager_Server : NetworkManagerBase
         ClientDataList.Remove(client);
         if (OnClientDisconnected != null)
             OnClientDisconnected.Invoke(client);
+        client.AutonomousObjects.ForEach((r) =>
+        {
+            DestroyReplicatedObject(r.Id);
+        });
         Debug.Log("Client Disconnected : " + client.address);
     }
 
@@ -217,6 +267,11 @@ public class NetworkManager_Server : NetworkManagerBase
             case "NewAutoObj":
                 CreateAutonomousPrefab(vs[1], vs[2], Serializer.StringToVector3(vs[3], vs[4], vs[5]), Serializer.StringToVector3(vs[6], vs[7], vs[8]), vs[9], client);
                 break;
+            case "DestAutoObj":
+                RepObjPairs.TryGetValue(int.Parse(vs[1]), out ReplicatiorBase replicatior);
+                if (client.AutonomousObjects.Contains(replicatior))
+                    DestroyReplicatedObject(int.Parse(vs[1]));
+                break;
             case "Init":
                 SendInitialMessage(client);
                 break;
@@ -228,6 +283,9 @@ public class NetworkManager_Server : NetworkManagerBase
                 break;
             case "RPCMC": //MultiCast RPC
                 MultiCastRPC(vs[1], vs[2], vs[3]);
+                break;
+            case "Disconnect":
+                ClientDisconnected(client);
                 break;
             default:
                 OnTcpMessageReceived?.Invoke(encoding.GetBytes(request), client);
@@ -298,7 +356,7 @@ public class NetworkManager_Server : NetworkManagerBase
     /// <param name="eular"></param>
     /// <param name="ParentObjName"></param>
     /// <returns></returns>
-    public GameObject CreateNetworkPrefab(string LocalPrefabName,string NetworkPrefabName, Vector3 pos, Vector3 eular, string ParentObjName)
+    public GameObject CreateNetworkPrefab(string LocalPrefabName, string NetworkPrefabName, Vector3 pos, Vector3 eular, string ParentObjName)
     {
         string path = "Prefabs/" + LocalPrefabName;
         GameObject Pobj = (GameObject)Resources.Load(path), parentobj = GameObject.Find(ParentObjName), obj;
@@ -363,6 +421,24 @@ public class NetworkManager_Server : NetworkManagerBase
         });
     }
 
+    public void DestroyReplicatedObject(int Id)
+    {
+        if (RepObjPairs.TryGetValue(Id, out ReplicatiorBase replicatior))
+        {
+            ClientDataList.ForEach((c) =>
+                    {
+                        if (!c.AutonomousObjects.Contains(replicatior))
+                            SendTcpPacket(c, encoding.GetBytes("Dest," + Id));
+                        else
+                            c.AutonomousObjects.Remove(replicatior);
+                    });
+            Debug.Log("Destroy NetworkObject : " + replicatior.gameObject.name);
+            RepObjects.Remove(replicatior);
+            RepObjPairs.Remove(replicatior.Id);
+            Destroy(replicatior.gameObject);
+        }
+    }
+
     void ProcessRPC(string ObjName, string MethodName, string arg)
     {
         GameObject obj = GameObject.Find(ObjName);
@@ -390,7 +466,10 @@ public class NetworkManager_Server : NetworkManagerBase
         ClientDataList.ForEach((c) => SendTcpPacket(c, encoding.GetBytes("RPCOC," + ObjName + "," + MethodName + "," + arg)));
     }
 
-    void Update()
+    /// <summary>
+    /// manually call is not recommended
+    /// </summary>
+    public void ServerTick()
     {
         if (ClientDataList.Count < 1)
             return;

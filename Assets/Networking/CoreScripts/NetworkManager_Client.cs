@@ -32,10 +32,11 @@ public class NetworkManager_Client : NetworkManagerBase
     Dictionary<int, ReplicatiorBase> RepObjPairs;
     int buffersize = 512;
     byte[] databuffer;
+    [SerializeField]
+    float ClientUpdateInterval = 0.033f;
 
     public delegate void ConnectionNotification(NetworkManager_Client client);
     public delegate void NetworkDataHandler(byte[] data);
-    public delegate void ReplicatedObjectNotification(ReplicatiorBase replicatior);
 
     public ConnectionNotification OnConnectedToServer;
     public ConnectionNotification OnAssignedNetwork;
@@ -52,6 +53,16 @@ public class NetworkManager_Client : NetworkManagerBase
         {
             LaunchNetworkClient();
         }
+    }
+
+    public override void Launch()
+    {
+        LaunchNetworkClient();
+    }
+
+    public override void ShutDown()
+    {
+        ShutDownClient();
     }
 
     public void LaunchNetworkClient()
@@ -73,6 +84,22 @@ public class NetworkManager_Client : NetworkManagerBase
         LocalInst = this;
     }
 
+    public void ShutDownClient()
+    {
+        databuffer = null;
+        CancelInvoke();
+        SendTcpPacket(encoding.GetBytes("Disconnect$"));
+        OwnTcpSocket.Close();
+        OwnTcpSocket = null;
+        OwnUdpClient.Close();
+        OwnUdpClient = null;
+        AutonomausObjects.Clear();
+        AutonomausObjects = null;
+        RepObjPairs.Clear();
+        RepObjPairs = null;
+        LocalInst = null;
+    }
+
     void ConnectedToServerCallback(System.IAsyncResult ar)
     {
         OwnTcpSocket.EndConnect(ar);
@@ -82,6 +109,7 @@ public class NetworkManager_Client : NetworkManagerBase
         OwnUdpClient.Send(encoding.GetBytes("InitRep$"), encoding.GetByteCount("InitRep$"), new IPEndPoint(IPAddress.Parse(TargetIP), UdpPortNum));
         if (OnConnectedToServer != null)
             OnConnectedToServer.Invoke(this);
+        InvokeRepeating("ClientTick", ClientUpdateInterval, ClientUpdateInterval);
         //OwnUdpClient.Connect(TargetIP, UdpPortNum);
     }
 
@@ -97,8 +125,7 @@ public class NetworkManager_Client : NetworkManagerBase
             OnAssignedNetwork.Invoke(this);
     }
 
-    // Update is called once per frame
-    void Update()
+    public void ClientTick()
     {
         if (OwnTcpSocket == null || !OwnTcpSocket.Connected)
             return;
@@ -121,6 +148,7 @@ public class NetworkManager_Client : NetworkManagerBase
         }
         ReplicateAutonomousObject();
     }
+
     /// <summary>
     /// Send creating autonomous object request to server <!waring!> Autonomous Object must have One and Only Name!
     /// </summary>
@@ -134,6 +162,14 @@ public class NetworkManager_Client : NetworkManagerBase
     {
         SendTcpPacket(encoding.GetBytes("NewAutoObj," + ReplicatedPrefabName + "," + replicatior.gameObject.name + "," + Serializer.Vector3ToString(pos) +
             "," + Serializer.Vector3ToString(eular) + "," + ParentName));
+    }
+
+    public void DestroyAutonomousObject(ReplicatiorBase replicatior)
+    {
+        SendTcpPacket(encoding.GetBytes("DestAutoObj," + replicatior.Id));
+        RepObjPairs.Remove(replicatior.Id);
+        AutonomausObjects.Remove(replicatior);
+        Destroy(replicatior.gameObject);
     }
 
     public void RequestRPCOnServer(string ServerObjectName, string MethodName, string arg)
@@ -182,6 +218,15 @@ public class NetworkManager_Client : NetworkManagerBase
         Debug.Log("New Autonomous Object : " + ObjName);
     }
 
+    void DestroyReplicatedObject(int Id)
+    {
+        if (RepObjPairs.TryGetValue(Id, out ReplicatiorBase replicatior))
+        {
+            RepObjPairs.Remove(Id);
+            Destroy(replicatior.gameObject);
+        }
+    }
+
     void DecompServerMessage(byte[] data)
     {
         string datastr = encoding.GetString(data);
@@ -202,6 +247,13 @@ public class NetworkManager_Client : NetworkManagerBase
                 break;
             case "AutoObjAdded":
                 AddAdmittedAutonomousObject(vs[1], int.Parse(vs[2]));
+                break;
+            case "Dest":
+                DestroyReplicatedObject(int.Parse(vs[1]));
+                break;
+            case "End":
+                Debug.Log("Server Shutdown");
+                ShutDownClient();
                 break;
             case "RPCOC":
                 ProcessRPC(vs[1], vs[2], vs[3]);
