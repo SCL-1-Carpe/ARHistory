@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using System.Net;
+using System;
 
 public class ServerCommandSystem : MonoBehaviour
 {
@@ -15,10 +16,12 @@ public class ServerCommandSystem : MonoBehaviour
     {
         server.OnNewClientConnected += OnClientConnected;
         server.OnClientDisconnected += OnClientDisconnected;
-        server.OnTcpMessageReceived += (data, client) =>
-        {
+        server.OnTcpMessageReceived += OnReceivedMessage;
+    }
 
-        };
+    private void OnReceivedMessage(byte[] data, ClientDataContainer clientData)
+    {
+        
     }
 
     void OnClientConnected(ClientDataContainer client)
