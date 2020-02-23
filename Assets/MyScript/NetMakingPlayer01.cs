@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class NetMakingPlayer01 : MonoBehaviour
 {
-    [SerializeField] NetworkManager_Client client;
+     NetworkManager_Client client;
     [SerializeField] GameObject A;
     [SerializeField] GameObject UtyuHikousi;
 
@@ -21,6 +21,7 @@ public class NetMakingPlayer01 : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        client = NetworkManagerBase.LocalInst as NetworkManager_Client;
         A.SetActive(false);
         client.OnNewRepObjectAdded += NewObjCreated;
     }

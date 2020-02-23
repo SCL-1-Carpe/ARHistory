@@ -4437,7 +4437,7 @@ MonoBehaviour:
   NetworkId: 0
   DOwnIP: 192.168.100.101
   TargetIP: 192.168.100.105
-  LaunchOnStart: 0
+  LaunchOnStart: 1
   TcpPortNum: 7990
   UdpPortNum: 7995
 --- !u!1 &1857638075
