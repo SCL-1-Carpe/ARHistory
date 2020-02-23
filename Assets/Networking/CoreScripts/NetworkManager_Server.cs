@@ -275,8 +275,17 @@ public class NetworkManager_Server : NetworkManagerBase
             case "Init":
                 SendInitialMessage(client);
                 break;
+            case "RPWCOS": //WideRange RPC On Server
+                ProcessRPC_Wide(vs[1], vs[2], vs[3]);
+                break;
+            case "RPWCOC": //WideRange RPC On Client
+                HandOutRPC_Wide(byte.Parse(vs[1]), vs[2], vs[3], vs[4]);
+                break;
+            case "RPWCMC": //MultiCast WideRange RPC
+                MultiCastRPC_Wide(vs[1], vs[2], vs[3]);
+                break;
             case "RPCOS": //RPC On Server
-                ProcessRPC(vs[1], vs[2], vs[3]);
+                ProcessRPC(int.Parse(vs[1]), vs[2], vs[3]);
                 break;
             case "RPCOC": //RPC On Client
                 HandOutRPC(byte.Parse(vs[1]), vs[2], vs[3], vs[4]);
@@ -439,31 +448,60 @@ public class NetworkManager_Server : NetworkManagerBase
         }
     }
 
-    void ProcessRPC(string ObjName, string MethodName, string arg)
+    void ProcessRPC(int ObjId, string MethodName, string arg)
+    {
+        if (RepObjPairs.TryGetValue(ObjId, out ReplicatiorBase replicatior))
+        {
+            replicatior.SendMessage(MethodName, arg, SendMessageOptions.DontRequireReceiver);
+        }
+        else
+        {
+            Debug.Log("Object Id is invalid. RPC failed");
+            return;
+        }
+    }
+
+    void HandOutRPC(byte ClientId, string ObjId, string MethodName, string arg)
+    {
+        if (ClientId == 0)
+            ProcessRPC(int.Parse(ObjId), MethodName, arg);
+        else
+        {
+            SendTcpPacket(ClientDataList.Find((c) => c.NetworkId == ClientId), encoding.GetBytes("RPCOC," + ObjId + "," + MethodName + "," + arg));
+        }
+    }
+
+    void MultiCastRPC(string ObjId, string MethodName, string arg)
+    {
+        ProcessRPC(int.Parse(ObjId), MethodName, arg);
+        ClientDataList.ForEach((c) => SendTcpPacket(c, encoding.GetBytes("RPCOC," + ObjId + "," + MethodName + "," + arg)));
+    }
+
+    void ProcessRPC_Wide(string ObjName, string MethodName, string arg)
     {
         GameObject obj = GameObject.Find(ObjName);
         if (obj == null)
         {
-            Debug.Log("Object couldnt find. RPC failed");
+            Debug.Log("Object couldnt find. WideRange RPC failed");
             return;
         }
         obj.SendMessage(MethodName, arg, SendMessageOptions.DontRequireReceiver);
     }
 
-    void HandOutRPC(byte ClientId, string ObjName, string MethodName, string arg)
+    void HandOutRPC_Wide(byte ClientId, string ObjName, string MethodName, string arg)
     {
         if (ClientId == 0)
-            ProcessRPC(ObjName, MethodName, arg);
+            ProcessRPC_Wide(ObjName, MethodName, arg);
         else
         {
-            SendTcpPacket(ClientDataList.Find((c) => c.NetworkId == ClientId), encoding.GetBytes("RPCOC," + ObjName + "," + MethodName + "," + arg));
+            SendTcpPacket(ClientDataList.Find((c) => c.NetworkId == ClientId), encoding.GetBytes("RPWCOC," + ObjName + "," + MethodName + "," + arg));
         }
     }
 
-    void MultiCastRPC(string ObjName, string MethodName, string arg)
+    void MultiCastRPC_Wide(string ObjName, string MethodName, string arg)
     {
-        ProcessRPC(ObjName, MethodName, arg);
-        ClientDataList.ForEach((c) => SendTcpPacket(c, encoding.GetBytes("RPCOC," + ObjName + "," + MethodName + "," + arg)));
+        ProcessRPC_Wide(ObjName, MethodName, arg);
+        ClientDataList.ForEach((c) => SendTcpPacket(c, encoding.GetBytes("RPWCOC," + ObjName + "," + MethodName + "," + arg)));
     }
 
     /// <summary>

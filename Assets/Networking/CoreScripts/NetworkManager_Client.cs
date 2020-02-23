@@ -172,24 +172,44 @@ public class NetworkManager_Client : NetworkManagerBase
         Destroy(replicatior.gameObject);
     }
 
-    public void RequestRPCOnServer(string ServerObjectName, string MethodName, string arg)
+    public void RequestRPCOnServer(ReplicatiorBase RPCTarget, string MethodName, string arg)
     {
-        SendTcpPacket(encoding.GetBytes("RPCOS," + ServerObjectName + "," + MethodName + "," + arg));
+        SendTcpPacket(encoding.GetBytes("RPCOS," + RPCTarget.Id + "," + MethodName + "," + arg));
     }
 
-    public void RequestRPCOnOtherClient(string ObjectName, string MethodName, string arg, byte ClientId)
+    public void RequestRPCOnOtherClient(ReplicatiorBase RPCTarget, string MethodName, string arg, byte ClientId)
     {
         if (ClientId == NetworkId)
-            ProcessRPC(ObjectName, MethodName, arg);
+            ProcessRPC(RPCTarget.Id, MethodName, arg);
         else
         {
-            SendTcpPacket(encoding.GetBytes("RPCOC," + ClientId + "," + ObjectName + "," + MethodName + "," + arg));
+            SendTcpPacket(encoding.GetBytes("RPCOC," + ClientId + "," + RPCTarget.Id + "," + MethodName + "," + arg));
         }
     }
 
-    public void RequestRPCMultiCast(string ObjectName,string MethodName,string arg)
+    public void RequestRPCMultiCast(ReplicatiorBase RPCTarget, string MethodName, string arg)
     {
-        SendTcpPacket(encoding.GetBytes("RPCMC," + ObjectName + "," + MethodName + "," + arg));
+        SendTcpPacket(encoding.GetBytes("RPCMC," + RPCTarget.Id + "," + MethodName + "," + arg));
+    }
+
+    public void RequestRPCOnServer_Wide(string ServerObjectName, string MethodName, string arg)
+    {
+        SendTcpPacket(encoding.GetBytes("RPWCOS," + ServerObjectName + "," + MethodName + "," + arg));
+    }
+
+    public void RequestRPCOnOtherClient_Wide(string ObjectName, string MethodName, string arg, byte ClientId)
+    {
+        if (ClientId == NetworkId)
+            ProcessRPC_Wide(ObjectName, MethodName, arg);
+        else
+        {
+            SendTcpPacket(encoding.GetBytes("RPWCOC," + ClientId + "," + ObjectName + "," + MethodName + "," + arg));
+        }
+    }
+
+    public void RequestRPCMultiCast_Wide(string ObjectName, string MethodName, string arg)
+    {
+        SendTcpPacket(encoding.GetBytes("RPWCMC," + ObjectName + "," + MethodName + "," + arg));
     }
 
     void AddNewReplicatedObject(ReplicatiorBase replicatior, int Id, byte OwnerId)
@@ -205,7 +225,7 @@ public class NetworkManager_Client : NetworkManagerBase
     void AddAdmittedAutonomousObject(string ObjName, int ObjId)
     {
         GameObject obj = GameObject.Find(ObjName);
-       
+
         if (obj == null)
             return;
 
@@ -256,7 +276,10 @@ public class NetworkManager_Client : NetworkManagerBase
                 ShutDownClient();
                 break;
             case "RPCOC":
-                ProcessRPC(vs[1], vs[2], vs[3]);
+                ProcessRPC(int.Parse(vs[1]), vs[2], vs[3]);
+                break;
+            case "RPWCOC":
+                ProcessRPC_Wide(vs[1], vs[2], vs[3]);
                 break;
             case "Assign":
                 NetworkInitialize(byte.Parse(vs[1]));
@@ -282,12 +305,25 @@ public class NetworkManager_Client : NetworkManagerBase
         return obj;
     }
 
-    void ProcessRPC(string ObjectName, string MethodName, string arg)
+    void ProcessRPC(int ObjectId, string MethodName, string arg)
+    {
+        if (RepObjPairs.TryGetValue(ObjectId, out ReplicatiorBase replicatior))
+        {
+            replicatior.SendMessage(MethodName, arg, SendMessageOptions.DontRequireReceiver);
+        }
+        else
+        {
+            Debug.Log("Object Id is invalid. RPC failed.");
+            return;
+        }
+    }
+
+    void ProcessRPC_Wide(string ObjectName, string MethodName, string arg)
     {
         GameObject obj = GameObject.Find(ObjectName);
         if (obj == null)
         {
-            Debug.Log("Object couldnt find. RPC failed.");
+            Debug.Log("Object couldnt find. WideRange RPC failed.");
             return;
         }
         obj.SendMessage(MethodName, arg, SendMessageOptions.DontRequireReceiver);
