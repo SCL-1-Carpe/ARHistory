@@ -26,13 +26,11 @@ public class ServerCommandSystem : MonoBehaviour
 
     void OnClientConnected(ClientDataContainer client)
     {
-        UpdateUI();
+        Invoke("UpdateUI",0.1f);
     }
     void OnClientDisconnected(ClientDataContainer client)
     {
-        ClientUIController uIController= clientUIs.Find((ui) => ui.clientDataContainer.address == client.address);
-        clientUIs.Remove(uIController);
-        Destroy(uIController.gameObject);
+        Invoke("UpdateUI", 0.1f);
     }
 
     public void UpdateUI()
