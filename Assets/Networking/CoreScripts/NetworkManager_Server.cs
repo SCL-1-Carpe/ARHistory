@@ -103,8 +103,7 @@ public class NetworkManager_Server : NetworkManagerBase
         {
             listener = new TcpListener(IPAddress.Any, TcpPortNum);
             listener.Start();
-            listener.BeginAcceptTcpClient(AcceptedClientCallback, listener);
-            //InvokeRepeating("CheckForNewClient", ServerAcceptInterval, ServerAcceptInterval);
+            InvokeRepeating("CheckForNewClient", ServerAcceptInterval, ServerAcceptInterval);
             InvokeRepeating("ServerTick", ServerUpdateInterval, ServerUpdateInterval);
             Debug.Log("Launch Server Successfully!");
         }
@@ -160,7 +159,6 @@ public class NetworkManager_Server : NetworkManagerBase
         ClientDataList.Add(c);
         if (OnNewClientConnected != null)
             OnNewClientConnected.Invoke(c);
-        listener.BeginAcceptTcpClient(AcceptedClientCallback, listener);
     }
 
     void SendInitialMessage(ClientDataContainer client)
