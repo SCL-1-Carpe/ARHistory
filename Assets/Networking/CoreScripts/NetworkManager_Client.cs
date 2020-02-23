@@ -32,10 +32,11 @@ public class NetworkManager_Client : NetworkManagerBase
     Dictionary<int, ReplicatiorBase> RepObjPairs;
     int buffersize = 512;
     byte[] databuffer;
+    [SerializeField]
+    float ClientUpdateInterval = 0.033f;
 
     public delegate void ConnectionNotification(NetworkManager_Client client);
     public delegate void NetworkDataHandler(byte[] data);
-    public delegate void ReplicatedObjectNotification(ReplicatiorBase replicatior);
 
     public ConnectionNotification OnConnectedToServer;
     public ConnectionNotification OnAssignedNetwork;
@@ -52,6 +53,16 @@ public class NetworkManager_Client : NetworkManagerBase
         {
             LaunchNetworkClient();
         }
+    }
+
+    public override void Launch()
+    {
+        LaunchNetworkClient();
+    }
+
+    public override void ShutDown()
+    {
+        ShutDownClient();
     }
 
     public void LaunchNetworkClient()
@@ -73,6 +84,23 @@ public class NetworkManager_Client : NetworkManagerBase
         LocalInst = this;
     }
 
+    public void ShutDownClient()
+    {
+        databuffer = null;
+        CancelInvoke();
+        if(OwnTcpSocket.Connected)
+        SendTcpPacket(encoding.GetBytes("Disconnect$"));
+        OwnTcpSocket.Close();
+        OwnTcpSocket = null;
+        OwnUdpClient.Close();
+        OwnUdpClient = null;
+        AutonomausObjects.Clear();
+        AutonomausObjects = null;
+        RepObjPairs.Clear();
+        RepObjPairs = null;
+        LocalInst = null;
+    }
+
     void ConnectedToServerCallback(System.IAsyncResult ar)
     {
         OwnTcpSocket.EndConnect(ar);
@@ -82,12 +110,31 @@ public class NetworkManager_Client : NetworkManagerBase
         OwnUdpClient.Send(encoding.GetBytes("InitRep$"), encoding.GetByteCount("InitRep$"), new IPEndPoint(IPAddress.Parse(TargetIP), UdpPortNum));
         if (OnConnectedToServer != null)
             OnConnectedToServer.Invoke(this);
+        InvokeRepeating("ClientTick", ClientUpdateInterval, ClientUpdateInterval);
         //OwnUdpClient.Connect(TargetIP, UdpPortNum);
     }
 
     public void SendTcpPacket(byte[] data)
     {
-        OwnTcpSocket.Client.Send(data);
+        try
+        {
+            OwnTcpSocket.Client.Send(data);
+        }
+        catch
+        {
+            Debug.Log("Connection Lost.");
+        }
+    }
+    public void SendTcpPacket(string data)
+    {
+        try
+        {
+            OwnTcpSocket.Client.Send(encoding.GetBytes(data));
+        }
+        catch
+        {
+            Debug.Log("Connection Lost.");
+        }
     }
 
     void NetworkInitialize(byte NewId)
@@ -97,8 +144,7 @@ public class NetworkManager_Client : NetworkManagerBase
             OnAssignedNetwork.Invoke(this);
     }
 
-    // Update is called once per frame
-    void Update()
+    public void ClientTick()
     {
         if (OwnTcpSocket == null || !OwnTcpSocket.Connected)
             return;
@@ -121,6 +167,7 @@ public class NetworkManager_Client : NetworkManagerBase
         }
         ReplicateAutonomousObject();
     }
+
     /// <summary>
     /// Send creating autonomous object request to server <!waring!> Autonomous Object must have One and Only Name!
     /// </summary>
@@ -136,24 +183,52 @@ public class NetworkManager_Client : NetworkManagerBase
             "," + Serializer.Vector3ToString(eular) + "," + ParentName));
     }
 
-    public void RequestRPCOnServer(string ServerObjectName, string MethodName, string arg)
+    public void DestroyAutonomousObject(ReplicatiorBase replicatior)
     {
-        SendTcpPacket(encoding.GetBytes("RPCOS," + ServerObjectName + "," + MethodName + "," + arg));
+        SendTcpPacket(encoding.GetBytes("DestAutoObj," + replicatior.Id));
+        RepObjPairs.Remove(replicatior.Id);
+        AutonomausObjects.Remove(replicatior);
+        Destroy(replicatior.gameObject);
     }
 
-    public void RequestRPCOnOtherClient(string ObjectName, string MethodName, string arg, byte ClientId)
+    public void RequestRPCOnServer(ReplicatiorBase RPCTarget, string MethodName, string arg)
+    {
+        SendTcpPacket(encoding.GetBytes("RPCOS," + RPCTarget.Id + "," + MethodName + "," + arg));
+    }
+
+    public void RequestRPCOnOtherClient(ReplicatiorBase RPCTarget, string MethodName, string arg, byte ClientId)
     {
         if (ClientId == NetworkId)
-            ProcessRPC(ObjectName, MethodName, arg);
+            ProcessRPC(RPCTarget.Id, MethodName, arg);
         else
         {
-            SendTcpPacket(encoding.GetBytes("RPCOC," + ClientId + "," + ObjectName + "," + MethodName + "," + arg));
+            SendTcpPacket(encoding.GetBytes("RPCOC," + ClientId + "," + RPCTarget.Id + "," + MethodName + "," + arg));
         }
     }
 
-    public void RequestRPCMultiCast(string ObjectName,string MethodName,string arg)
+    public void RequestRPCMultiCast(ReplicatiorBase RPCTarget, string MethodName, string arg)
     {
-        SendTcpPacket(encoding.GetBytes("RPCMC," + ObjectName + "," + MethodName + "," + arg));
+        SendTcpPacket(encoding.GetBytes("RPCMC," + RPCTarget.Id + "," + MethodName + "," + arg));
+    }
+
+    public void RequestRPCOnServer_Wide(string ServerObjectName, string MethodName, string arg)
+    {
+        SendTcpPacket(encoding.GetBytes("RPWCOS," + ServerObjectName + "," + MethodName + "," + arg));
+    }
+
+    public void RequestRPCOnOtherClient_Wide(string ObjectName, string MethodName, string arg, byte ClientId)
+    {
+        if (ClientId == NetworkId)
+            ProcessRPC_Wide(ObjectName, MethodName, arg);
+        else
+        {
+            SendTcpPacket(encoding.GetBytes("RPWCOC," + ClientId + "," + ObjectName + "," + MethodName + "," + arg));
+        }
+    }
+
+    public void RequestRPCMultiCast_Wide(string ObjectName, string MethodName, string arg)
+    {
+        SendTcpPacket(encoding.GetBytes("RPWCMC," + ObjectName + "," + MethodName + "," + arg));
     }
 
     void AddNewReplicatedObject(ReplicatiorBase replicatior, int Id, byte OwnerId)
@@ -169,7 +244,7 @@ public class NetworkManager_Client : NetworkManagerBase
     void AddAdmittedAutonomousObject(string ObjName, int ObjId)
     {
         GameObject obj = GameObject.Find(ObjName);
-       
+
         if (obj == null)
             return;
 
@@ -180,6 +255,15 @@ public class NetworkManager_Client : NetworkManagerBase
             OnNewAutonomousObjectAdmitted.Invoke(replicatior);
 
         Debug.Log("New Autonomous Object : " + ObjName);
+    }
+
+    void DestroyReplicatedObject(int Id)
+    {
+        if (RepObjPairs.TryGetValue(Id, out ReplicatiorBase replicatior))
+        {
+            RepObjPairs.Remove(Id);
+            Destroy(replicatior.gameObject);
+        }
     }
 
     void DecompServerMessage(byte[] data)
@@ -203,8 +287,18 @@ public class NetworkManager_Client : NetworkManagerBase
             case "AutoObjAdded":
                 AddAdmittedAutonomousObject(vs[1], int.Parse(vs[2]));
                 break;
+            case "Dest":
+                DestroyReplicatedObject(int.Parse(vs[1]));
+                break;
+            case "End":
+                Debug.Log("Server Shutdown");
+                ShutDownClient();
+                break;
             case "RPCOC":
-                ProcessRPC(vs[1], vs[2], vs[3]);
+                ProcessRPC(int.Parse(vs[1]), vs[2], vs[3]);
+                break;
+            case "RPWCOC":
+                ProcessRPC_Wide(vs[1], vs[2], vs[3]);
                 break;
             case "Assign":
                 NetworkInitialize(byte.Parse(vs[1]));
@@ -230,12 +324,25 @@ public class NetworkManager_Client : NetworkManagerBase
         return obj;
     }
 
-    void ProcessRPC(string ObjectName, string MethodName, string arg)
+    void ProcessRPC(int ObjectId, string MethodName, string arg)
+    {
+        if (RepObjPairs.TryGetValue(ObjectId, out ReplicatiorBase replicatior))
+        {
+            replicatior.SendMessage(MethodName, arg, SendMessageOptions.DontRequireReceiver);
+        }
+        else
+        {
+            Debug.Log("Object Id is invalid. RPC failed.");
+            return;
+        }
+    }
+
+    void ProcessRPC_Wide(string ObjectName, string MethodName, string arg)
     {
         GameObject obj = GameObject.Find(ObjectName);
         if (obj == null)
         {
-            Debug.Log("Object couldnt find. RPC failed.");
+            Debug.Log("Object couldnt find. WideRange RPC failed.");
             return;
         }
         obj.SendMessage(MethodName, arg, SendMessageOptions.DontRequireReceiver);

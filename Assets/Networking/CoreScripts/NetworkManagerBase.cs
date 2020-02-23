@@ -14,7 +14,14 @@ public class NetworkManagerBase : MonoBehaviour
     /// </summary>
     public static Encoding encoding = Encoding.ASCII;
 
+    public delegate void ReplicatedObjectNotification(ReplicatiorBase replicatior);
+
     public virtual void Launch()
+    {
+
+    }
+
+    public virtual void ShutDown()
     {
 
     }
