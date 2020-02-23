@@ -638,6 +638,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 63a140e87cc1c41848573d02a9594286, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  MainHistoryName: MainHistory
 --- !u!1001 &366624982
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1520,7 +1521,7 @@ Transform:
   - {fileID: 1788280275}
   - {fileID: 346497542}
   m_Father: {fileID: 0}
-  m_RootOrder: 5
+  m_RootOrder: 6
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &634827119
 GameObject:
@@ -2771,12 +2772,12 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1053106292}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 6
+  m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1166953544
 GameObject:
@@ -2934,9 +2935,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Check01: 0
   OsitaiButton: {fileID: 1455724593}
-  Test:
-  - {fileID: 0}
-  - {fileID: 0}
+  DoAllBool: 0
+  ButtonGun: []
 --- !u!1 &1204996367
 GameObject:
   m_ObjectHideFlags: 0
@@ -3653,6 +3653,17 @@ MonoBehaviour:
         m_CallState: 2
       - m_Target: {fileID: 1197925449}
         m_MethodName: ChangeToShowingCOnnect
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+      - m_Target: {fileID: 1788280276}
+        m_MethodName: LaunchNetworkClient
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -4425,10 +4436,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   NetworkId: 0
   DOwnIP: 192.168.100.101
-  TargetIP: 192.168.100.101
+  TargetIP: 192.168.100.105
   LaunchOnStart: 0
-  TcpPortNum: 7890
-  UdpPortNum: 7891
+  TcpPortNum: 7990
+  UdpPortNum: 7995
 --- !u!1 &1857638075
 GameObject:
   m_ObjectHideFlags: 0
@@ -4984,7 +4995,7 @@ Transform:
   - {fileID: 583904222}
   - {fileID: 1495848931}
   m_Father: {fileID: 0}
-  m_RootOrder: 4
+  m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &2022115749
 GameObject:

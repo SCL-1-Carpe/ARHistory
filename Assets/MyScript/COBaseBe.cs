@@ -1,6 +1,8 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
+
 
 namespace MagicLeap{
 
@@ -8,44 +10,55 @@ namespace MagicLeap{
     {
         //[SerializeField] ImageTrackingExample A;
         //[SerializeField] GameObject ParentM;
+        [SerializeField] string MainHistoryName;
+
 
         [System.NonSerialized] public bool HinannKanryou=true;
 
         // Start is called before the first frame update
         void Start()
         {
-           // Debug.Log("テストフラグ１３１");
 
+            // Debug.Log("テストフラグ１３１");
+            SceneManager.sceneLoaded += SceneLoaded;
 
         }
 
         // Update is called once per frame
         void Update()
         {
-            Debug.Log("テストフラグ５４２３１");
+           
+        }
 
+        void SceneLoaded(Scene thisScene,LoadSceneMode loadSceneMode1)
+        {
+            Debug.Log(thisScene.name);
 
-            /*
-            if (A.MyCOBaseBool)
+            if (MainHistoryName== thisScene.name)
             {
-                gameObject.transform.parent = ParentM.transform;
+                GameObject imageCube = GameObject.FindGameObjectWithTag("imageStandardCube");
 
-                HinannKanryou = false;
+                if (imageCube!=null)
+                {
+                    gameObject.transform.parent = imageCube.transform;
+                }
+                else
+                {
+                    Debug.Log("We can not find imageTag");
+
+                }
 
             }
             else
             {
-                gameObject.transform.parent = null;
-
-                HinannKanryou = true;
+                Debug.Log("シーンに置けるcobaseの変換が失敗している");
 
             }
-            */
 
-           
 
         }
-        
+
+
 
     }
 }
