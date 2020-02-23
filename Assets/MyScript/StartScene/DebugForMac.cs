@@ -6,14 +6,16 @@ using UnityEngine.UI;
 
 public class DebugForMac : MonoBehaviour
 {
-    //[SerializeField]
-    // Start is called before the first frame update
     [SerializeField] bool Check01 = false;
 
+    [SerializeField] Button OsitaiButton ;
 
-    [SerializeField] Button OsitaiButton;
 
-    [SerializeField] List<Button> Test = new List<Button>();
+
+    [SerializeField, Space(15)] bool DoAllBool = false;
+    [SerializeField,Header("If you have buttons you want to try,insert one to this column")]
+     List<Button> ButtonGun = new List<Button>();
+
 
     void Start()
     {
@@ -23,17 +25,32 @@ public class DebugForMac : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (Check01)
+        if (Check01 && OsitaiButton!=null)
         {
-            //ここにデバック用の操作を付け加える。
-
-
             OsitaiButton.onClick.Invoke();
-
 
             Check01 = false;
 
         }
+
+        if (DoAllBool && ButtonGun.Count>0)
+        {
+            foreach(Button OneButten in ButtonGun)
+            {
+                OneButten.onClick.Invoke();
+
+            }
+            DoAllBool = false;
+
+
+        }
+
+
+
+
+
+
+
 
 
     }

@@ -6,6 +6,7 @@ TagManager:
   tags:
   - Fire
   - COBaseTag
+  - imageStandardCube
   layers:
   - Default
   - TransparentFX
