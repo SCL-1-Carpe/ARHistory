@@ -88,6 +88,7 @@ public class NetworkManager_Client : NetworkManagerBase
     {
         databuffer = null;
         CancelInvoke();
+        if(OwnTcpSocket.Connected)
         SendTcpPacket(encoding.GetBytes("Disconnect$"));
         OwnTcpSocket.Close();
         OwnTcpSocket = null;
@@ -115,7 +116,25 @@ public class NetworkManager_Client : NetworkManagerBase
 
     public void SendTcpPacket(byte[] data)
     {
-        OwnTcpSocket.Client.Send(data);
+        try
+        {
+            OwnTcpSocket.Client.Send(data);
+        }
+        catch
+        {
+            Debug.Log("Connection Lost.");
+        }
+    }
+    public void SendTcpPacket(string data)
+    {
+        try
+        {
+            OwnTcpSocket.Client.Send(encoding.GetBytes(data));
+        }
+        catch
+        {
+            Debug.Log("Connection Lost.");
+        }
     }
 
     void NetworkInitialize(byte NewId)

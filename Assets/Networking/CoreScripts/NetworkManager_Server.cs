@@ -103,7 +103,8 @@ public class NetworkManager_Server : NetworkManagerBase
         {
             listener = new TcpListener(IPAddress.Any, TcpPortNum);
             listener.Start();
-            InvokeRepeating("CheckForNewClient", ServerAcceptInterval, ServerAcceptInterval);
+            listener.BeginAcceptTcpClient(AcceptedClientCallback, listener);
+            //InvokeRepeating("CheckForNewClient", ServerAcceptInterval, ServerAcceptInterval);
             InvokeRepeating("ServerTick", ServerUpdateInterval, ServerUpdateInterval);
             Debug.Log("Launch Server Successfully!");
         }
@@ -142,6 +143,7 @@ public class NetworkManager_Server : NetworkManagerBase
 
     void CheckForNewClient()
     {
+        Debug.Log("Check");
         if (listener.Pending())
         {
             Debug.Log("Accepting New Client...");
@@ -158,6 +160,7 @@ public class NetworkManager_Server : NetworkManagerBase
         ClientDataList.Add(c);
         if (OnNewClientConnected != null)
             OnNewClientConnected.Invoke(c);
+        listener.BeginAcceptTcpClient(AcceptedClientCallback, listener);
     }
 
     void SendInitialMessage(ClientDataContainer client)
@@ -176,6 +179,17 @@ public class NetworkManager_Server : NetworkManagerBase
         try
         {
             client.TcpSocket.Client.Send(data);
+        }
+        catch
+        {
+            ClientDisconnected(client);
+        }
+    }
+    public void SendTcpPacket(ClientDataContainer client,string data)
+    {
+        try
+        {
+            client.TcpSocket.Client.Send(encoding.GetBytes(data));
         }
         catch
         {
