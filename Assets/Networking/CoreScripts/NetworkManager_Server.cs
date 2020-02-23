@@ -157,8 +157,7 @@ public class NetworkManager_Server : NetworkManagerBase
         ClientDataContainer c = new ClientDataContainer() { TcpSocket = client, address = ((IPEndPoint)client.Client.RemoteEndPoint).Address, AutonomousObjects = new List<ReplicatiorBase>(), NetworkId = NetIdBuffer++ };
         Debug.Log("Client IPAddress : " + c.address);
         ClientDataList.Add(c);
-        if (OnNewClientConnected != null)
-            OnNewClientConnected.Invoke(c);
+        OnNewClientConnected?.Invoke(c);
     }
 
     void SendInitialMessage(ClientDataContainer client)
@@ -183,7 +182,7 @@ public class NetworkManager_Server : NetworkManagerBase
             ClientDisconnected(client);
         }
     }
-    public void SendTcpPacket(ClientDataContainer client,string data)
+    public void SendTcpPacket(ClientDataContainer client, string data)
     {
         try
         {
@@ -203,8 +202,7 @@ public class NetworkManager_Server : NetworkManagerBase
     void ClientDisconnected(ClientDataContainer client)
     {
         ClientDataList.Remove(client);
-        if (OnClientDisconnected != null)
-            OnClientDisconnected.Invoke(client);
+        OnClientDisconnected?.Invoke(client);
         client.AutonomousObjects.ForEach((r) =>
         {
             DestroyReplicatedObject(r.Id);
@@ -218,8 +216,7 @@ public class NetworkManager_Server : NetworkManagerBase
         replicatior.Id = ObjIdBuffer;
         replicatior.RepPrefabName = PrefabName;
         RepObjPairs.Add(ObjIdBuffer++, replicatior);
-        if (OnNewRepObjectAdded != null)
-            OnNewRepObjectAdded.Invoke(replicatior);
+        OnNewRepObjectAdded?.Invoke(replicatior);
     }
 
     void RegistNewAutonomousObject(ClientDataContainer client, ReplicatiorBase replicatior, string PrefabName)
@@ -227,8 +224,7 @@ public class NetworkManager_Server : NetworkManagerBase
         RegistNewReplicationObject(replicatior, PrefabName);
         replicatior.OwnerNetId = client.NetworkId;
         client.AutonomousObjects.Add(replicatior);
-        if (OnNewAutonomousObjectAdded != null)
-            OnNewAutonomousObjectAdded.Invoke(replicatior);
+        OnNewAutonomousObjectAdded?.Invoke(replicatior);
     }
 
     byte[] CreateReplicationData(ClientDataContainer client)

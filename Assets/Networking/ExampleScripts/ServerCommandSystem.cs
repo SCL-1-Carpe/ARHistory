@@ -13,24 +13,27 @@ public class ServerCommandSystem : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        server.OnNewClientConnected += (c) =>
-        {
-            GameObject obj = Instantiate(ClientUIPrefab, ContentPanel.transform);
-            ClientUIController uIController = obj.GetComponent<ClientUIController>();
-            uIController.Initialize(server, c);
-            clientStatuses.Add(c.address, uIController);
-        };
-        server.OnClientDisconnected += (c) =>
-        {
-            if (clientStatuses.TryGetValue(c.address, out ClientUIController uIController))
-            {
-                Destroy(uIController.gameObject);
-                clientStatuses.Remove(c.address);
-            }
-        };
-        server.OnTcpMessageReceived += (data,client) =>
+        server.OnNewClientConnected += OnClientConnected;
+        server.OnClientDisconnected += OnClientDisconnected;
+        server.OnTcpMessageReceived += (data, client) =>
         {
 
         };
+    }
+
+    void OnClientConnected(ClientDataContainer client)
+    {
+        GameObject obj = Instantiate(ClientUIPrefab, ContentPanel.transform);
+        ClientUIController uIController = obj.GetComponent<ClientUIController>();
+        uIController.Initialize(server, client);
+        clientStatuses.Add(client.address, uIController);
+    }
+    void OnClientDisconnected(ClientDataContainer client)
+    {
+        if (clientStatuses.TryGetValue(client.address, out ClientUIController uIController))
+        {
+            Destroy(uIController.gameObject);
+            clientStatuses.Remove(client.address);
+        }
     }
 }
