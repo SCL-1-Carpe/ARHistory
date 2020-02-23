@@ -10,7 +10,7 @@ public class ServerCommandSystem : MonoBehaviour
     NetworkManager_Server server;
     [SerializeField]
     GameObject ClientUIPrefab, ContentPanel;
-    Dictionary<IPAddress, ClientUIController> clientStatuses;
+    List<ClientUIController> clientUIs=new List<ClientUIController>();
     // Start is called before the first frame update
     void Start()
     {
@@ -26,17 +26,25 @@ public class ServerCommandSystem : MonoBehaviour
 
     void OnClientConnected(ClientDataContainer client)
     {
-        GameObject obj = Instantiate(ClientUIPrefab, ContentPanel.transform);
-        ClientUIController uIController = obj.GetComponent<ClientUIController>();
-        uIController.Initialize(server, client);
-        clientStatuses.Add(client.address, uIController);
+        UpdateUI();
     }
     void OnClientDisconnected(ClientDataContainer client)
     {
-        if (clientStatuses.TryGetValue(client.address, out ClientUIController uIController))
+        ClientUIController uIController= clientUIs.Find((ui) => ui.clientDataContainer.address == client.address);
+        clientUIs.Remove(uIController);
+        Destroy(uIController.gameObject);
+    }
+
+    public void UpdateUI()
+    {
+        clientUIs.ForEach((ui) => Destroy(ui.gameObject));
+        clientUIs.Clear();
+        server.ClientDataList.ForEach((client) =>
         {
-            Destroy(uIController.gameObject);
-            clientStatuses.Remove(client.address);
-        }
+            GameObject obj = Instantiate(ClientUIPrefab, ContentPanel.transform);
+            ClientUIController uIController = obj.GetComponent<ClientUIController>();
+            uIController.Initialize(server, client);
+            clientUIs.Add(uIController);
+        });
     }
 }
