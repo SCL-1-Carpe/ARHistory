@@ -1111,7 +1111,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 543601378}
   m_HandleRect: {fileID: 543601377}
   m_Direction: 2
-  m_Value: 1
+  m_Value: 0
   m_Size: 1
   m_NumberOfSteps: 0
   m_OnValueChanged:
@@ -1247,7 +1247,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 1566480418}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 117bb864e7abe014b86fb32ec7635a24, type: 3}
+  m_Script: {fileID: 11500000, guid: 88dac0b8522c2401a8c5293eba54aa4c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   server: {fileID: 1566480423}
