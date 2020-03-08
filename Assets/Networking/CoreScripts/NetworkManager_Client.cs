@@ -294,6 +294,10 @@ public class NetworkManager_Client : NetworkManagerBase
                 Debug.Log("Server Shutdown");
                 ShutDownClient();
                 break;
+            case "Kicked":
+                Debug.Log("Kicked From Server");
+                ShutDownClient();
+                break;
             case "RPCOC":
                 ProcessRPC(int.Parse(vs[1]), vs[2], vs[3]);
                 break;

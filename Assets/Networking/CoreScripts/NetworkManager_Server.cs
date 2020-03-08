@@ -142,7 +142,6 @@ public class NetworkManager_Server : NetworkManagerBase
 
     void CheckForNewClient()
     {
-        Debug.Log("Check");
         if (listener.Pending())
         {
             Debug.Log("Accepting New Client...");
@@ -197,6 +196,13 @@ public class NetworkManager_Server : NetworkManagerBase
     void SendFile(ClientDataContainer client, string FilePath)
     {
         client.TcpSocket.Client.SendFile(FilePath);
+    }
+
+    public void DisconnectClient(ClientDataContainer client)
+    {
+        SendTcpPacket(client, "Kicked");
+        if(ClientDataList.Contains(client))
+        ClientDisconnected(client);
     }
 
     void ClientDisconnected(ClientDataContainer client)

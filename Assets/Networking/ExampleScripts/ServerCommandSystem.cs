@@ -21,16 +21,22 @@ public class ServerCommandSystem : MonoBehaviour
 
     private void OnReceivedMessage(byte[] data, ClientDataContainer clientData)
     {
-        
+        Debug.Log("new");
+        GameObject obj = Instantiate(ClientUIPrefab, ContentPanel.transform);
+        ClientUIController uIController = obj.GetComponent<ClientUIController>();
+        uIController.Initialize(server, clientData);
+        clientUIs.Add(uIController);
     }
 
     void OnClientConnected(ClientDataContainer client)
     {
-        Invoke("UpdateUI",0.1f);
+        UpdateUI();
     }
     void OnClientDisconnected(ClientDataContainer client)
     {
-        Invoke("UpdateUI", 0.1f);
+        ClientUIController uIController= clientUIs.Find((ui) => ui.clientDataContainer.address == client.address);
+        clientUIs.Remove(uIController);
+        Destroy(uIController.gameObject);
     }
 
     public void UpdateUI()
@@ -39,6 +45,7 @@ public class ServerCommandSystem : MonoBehaviour
         clientUIs.Clear();
         server.ClientDataList.ForEach((client) =>
         {
+            Debug.Log("new");
             GameObject obj = Instantiate(ClientUIPrefab, ContentPanel.transform);
             ClientUIController uIController = obj.GetComponent<ClientUIController>();
             uIController.Initialize(server, client);

@@ -6,16 +6,28 @@ using UnityEngine.UI;
 public class ClientUIController : MonoBehaviour
 {
     public Text Nametext;
+    [SerializeField] InputField CmdInputF;
     public ClientDataContainer clientDataContainer;
+    NetworkManager_Server Server;
     // Start is called before the first frame update
     public void Initialize(NetworkManager_Server server, ClientDataContainer clientData)
     {
         clientDataContainer = clientData;
-        Nametext.text = clientData.address + " : Id " + clientData.NetworkId;
+        Server = server;
     }
 
-    public void Ban()
+    void Start()
     {
+        Nametext.text = clientDataContainer.address + " : Id " + clientDataContainer.NetworkId;
+    }
 
+    public void Kick()
+    {
+        Server.DisconnectClient(clientDataContainer);
+    }
+
+    public void SendCommand()
+    {
+        Server.SendTcpPacket(clientDataContainer, CmdInputF.text);
     }
 }
