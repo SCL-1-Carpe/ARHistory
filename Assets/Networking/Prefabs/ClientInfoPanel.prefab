@@ -91,6 +91,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Nametext: {fileID: 3433335906887675076}
+  CmdInputF: {fileID: 0}
 --- !u!1 &2199152866873265889
 GameObject:
   m_ObjectHideFlags: 0
@@ -518,7 +519,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 3379760324560349825}
-        m_MethodName: Ban
+        m_MethodName: SendCommand
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -724,7 +725,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 3379760324560349825}
-        m_MethodName: Ban
+        m_MethodName: Kick
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
